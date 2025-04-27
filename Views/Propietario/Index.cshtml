@@ -1,0 +1,50 @@
+@model IEnumerable<INMOBILIARIA_SANTI.Models.Propietario>
+
+@{
+    ViewData["Title"] = "Listado de Propietarios";
+}
+
+<h1>Listado de Propietarios</h1>
+
+<div class="mb-3">
+    <a class="btn btn-success" asp-action="Crear">Crear Propietario</a>
+</div>
+
+@if (Model != null && Model.Any())
+{
+    <table class="table table-bordered table-striped table-hover">
+        <thead class="table-primary">
+            <tr>
+                <th>@nameof(INMOBILIARIA_SANTI.Models.Propietario.nombre)</th>
+                <th>@nameof(INMOBILIARIA_SANTI.Models.Propietario.apellido)</th>
+                <th>@nameof(INMOBILIARIA_SANTI.Models.Propietario.dni)</th>
+                <th>@nameof(INMOBILIARIA_SANTI.Models.Propietario.telefono)</th>
+                <th>@nameof(INMOBILIARIA_SANTI.Models.Propietario.email)</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.nombre</td>
+                <td>@item.apellido</td>
+                <td>@item.dni</td>
+                <td>@item.telefono</td>
+                <td>@item.email</td>
+                <td>
+                    <a class="btn btn-info btn-sm" asp-action="Detalle" asp-route-id="@item.idPropietario">👁️ Detalle</a>
+                    <a class="btn btn-warning btn-sm" asp-action="Editar" asp-route-id="@item.idPropietario">✏️ Editar</a>
+                    <a class="btn btn-danger btn-sm" asp-action="Eliminar" asp-route-id="@item.idPropietario">🗑️ Eliminar</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-info">
+        No hay propietarios registrados aún.
+    </div>
+}
