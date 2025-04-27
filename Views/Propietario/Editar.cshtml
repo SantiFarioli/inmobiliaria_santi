@@ -1,16 +1,17 @@
 @model INMOBILIARIA_SANTI.Models.Propietario
 
 @{
-    ViewData["Title"] = "Crear Propietario";
+    ViewData["Title"] = "Editar Propietario";
 }
 
 <div class="text-center mb-4">
-    <h1>Crear Propietario</h1>
+    <h1>Editar Propietario</h1>
 </div>
 
 <div class="card">
     <div class="card-body">
-        <form asp-action="Crear" method="post">
+        <form asp-action="Editar" method="post">
+            <input type="hidden" asp-for="idPropietario" />
             <div class="mb-3">
                 <label asp-for="nombre" class="form-label">Nombre</label>
                 <input asp-for="nombre" class="form-control" />
@@ -32,7 +33,7 @@
                 <input asp-for="email" class="form-control" type="email" />
             </div>
 
-            <button type="submit" class="btn btn-primary">💾 Guardar</button>
+            <button type="submit" class="btn btn-primary">💾 Guardar Cambios</button>
             <a asp-action="Index" class="btn btn-secondary">🔙 Volver</a>
         </form>
     </div>

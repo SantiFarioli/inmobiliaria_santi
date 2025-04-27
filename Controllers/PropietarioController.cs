@@ -71,15 +71,27 @@ namespace INMOBILIARIA_SANTI.Controllers
         // POST: Propietario/Editar/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Editar(Propietario propietario)
+        public IActionResult Editar(int id, Propietario propietario)
         {
-            if (ModelState.IsValid)
+            try
             {
-                repositorio.ActualizarPropietario(propietario);
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    repositorio.ActualizarPropietario(propietario);
+                    TempData["Mensaje"] = "Propietario editado correctamente.";
+                    TempData["Tipo"] = "success";
+                    return RedirectToAction(nameof(Index));
+                }
+                TempData["Mensaje"] = "Error en la validación del formulario.";
+                TempData["Tipo"] = "warning";
+            }
+            catch (Exception ex)
+            {
+                TempData["Mensaje"] = "Error inesperado: " + ex.Message;
+                TempData["Tipo"] = "error";
             }
             return View(propietario);
-        }
+        }  
 
         // GET: Propietario/Eliminar/5
         public IActionResult Eliminar(int id)
@@ -92,13 +104,22 @@ namespace INMOBILIARIA_SANTI.Controllers
             return View(propietario);
         }
 
-        // POST: Propietario/Eliminar/5
-        [HttpPost, ActionName("Eliminar")]
-        [ValidateAntiForgeryToken]
+        [HttpGet]
         public IActionResult EliminarConfirmado(int id)
         {
-            repositorio.EliminarPropietario(id);
+        try
+            {
+                repositorio.EliminarPropietario(id);
+                TempData["Mensaje"] = "¡Propietario eliminado correctamente!";
+                TempData["Tipo"] = "success";
+            }
+            catch (Exception ex)
+            {
+                TempData["Mensaje"] = "Error al eliminar: " + ex.Message;
+                TempData["Tipo"] = "error";
+            }
             return RedirectToAction(nameof(Index));
         }
+
     }
 }
