@@ -1,0 +1,34 @@
+@model inmobiliaria_santi.Models.Inquilino
+
+@{
+    ViewData["Title"] = "Detalle del Inquilino";
+}
+
+<div class="text-center mb-4">
+    <h1>Detalle del Inquilino</h1>
+</div>
+
+<div class="card mx-auto" style="max-width: 600px;">
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-4">Nombre</dt>
+            <dd class="col-sm-8">@Model.nombre</dd>
+
+            <dt class="col-sm-4">Apellido</dt>
+            <dd class="col-sm-8">@Model.apellido</dd>
+
+            <dt class="col-sm-4">DNI</dt>
+            <dd class="col-sm-8">@Model.dni</dd>
+
+            <dt class="col-sm-4">Teléfono</dt>
+            <dd class="col-sm-8">@Model.telefono</dd>
+
+            <dt class="col-sm-4">Email</dt>
+            <dd class="col-sm-8">@Model.email</dd>
+        </dl>
+
+        <div class="text-center">
+            <a asp-action="Index" class="btn btn-secondary">🔙 Volver</a>
+        </div>
+    </div>
+</div>
