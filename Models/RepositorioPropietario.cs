@@ -1,5 +1,5 @@
 
-using INMOBILIARIA_SANTI.Models;
+using inmobiliaria_santi.Models;
 using MySql.Data.MySqlClient;
 using System.Collections.Generic;
 

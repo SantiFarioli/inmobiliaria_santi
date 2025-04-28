@@ -1,85 +1,36 @@
 using Microsoft.AspNetCore.Mvc;
-using INMOBILIARIA_SANTI.Models;
 using inmobiliaria_santi.Models;
 
 namespace inmobiliaria_santi.Controllers
 {
-    public class PropietarioController : Controller
+    public class InquilinoController : Controller
     {
-        private readonly RepositorioPropietario repositorio = new RepositorioPropietario();
+        private readonly RepositorioInquilino repositorio = new RepositorioInquilino();
 
-        // GET: Propietario
+        // GET: Inquilino
         public IActionResult Index()
         {
-            var propietarios = repositorio.ObtenerTodos();
-            return View(propietarios);
+            var inquilinos = repositorio.ObtenerTodos();
+            return View(inquilinos);
         }
 
-        // GET: Propietario/Crear
+        // GET: Inquilino/Crear
         public IActionResult Crear()
         {
             return View();
         }
 
-        // POST: Propietario/Crear
+        // POST: Inquilino/Crear
         [HttpPost]
         [ValidateAntiForgeryToken]
-        
-        public IActionResult Crear(Propietario propietario)
+        public IActionResult Crear(Inquilino inquilino)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    repositorio.CrearPropietario(propietario);
-                    TempData["Mensaje"] = "Propietario creado correctamente.";
-                    TempData["Tipo"] = "success"; // success | error | warning | info
-                    return RedirectToAction(nameof(Index));
-                }
-                TempData["Mensaje"] = "Error en la validación del formulario.";
-                TempData["Tipo"] = "warning";
-            }
-            catch (Exception ex)
-            {
-                TempData["Mensaje"] = "Error inesperado: " + ex.Message;
-                TempData["Tipo"] = "error";
-            }
-            return View(propietario);
-        }
-
-        // GET: Propietario/Detalle/5
-        public IActionResult Detalle(int id)
-        {
-            var propietario = repositorio.ObtenerPorId(id);
-            if (propietario == null)
-            {
-                return NotFound();
-            }
-            return View(propietario);
-        }
-
-        // GET: Propietario/Editar/5
-        public IActionResult Editar(int id)
-        {
-            var propietario = repositorio.ObtenerPorId(id);
-            if (propietario == null)
-            {
-                return NotFound();
-            }
-            return View(propietario);
-        }
-
-        // POST: Propietario/Editar/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Editar(int id, Propietario propietario)
-        {
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    repositorio.ActualizarPropietario(propietario);
-                    TempData["Mensaje"] = "Propietario editado correctamente.";
+                    repositorio.CrearInquilino(inquilino);
+                    TempData["Mensaje"] = "¡Inquilino creado correctamente!";
                     TempData["Tipo"] = "success";
                     return RedirectToAction(nameof(Index));
                 }
@@ -91,27 +42,64 @@ namespace inmobiliaria_santi.Controllers
                 TempData["Mensaje"] = "Error inesperado: " + ex.Message;
                 TempData["Tipo"] = "error";
             }
-            return View(propietario);
-        }  
+            return View(inquilino);
+        }
 
-        // GET: Propietario/Eliminar/5
-        public IActionResult Eliminar(int id)
+        // GET: Inquilino/Detalle/5
+        public IActionResult Detalle(int id)
         {
-            var propietario = repositorio.ObtenerPorId(id);
-            if (propietario == null)
+            var inquilino = repositorio.ObtenerPorId(id);
+            if (inquilino == null)
             {
                 return NotFound();
             }
-            return View(propietario);
+            return View(inquilino);
         }
 
+        // GET: Inquilino/Editar/5
+        public IActionResult Editar(int id)
+        {
+            var inquilino = repositorio.ObtenerPorId(id);
+            if (inquilino == null)
+            {
+                return NotFound();
+            }
+            return View(inquilino);
+        }
+
+        // POST: Inquilino/Editar
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Editar(Inquilino inquilino)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    repositorio.ActualizarInquilino(inquilino);
+                    TempData["Mensaje"] = "¡Inquilino actualizado correctamente!";
+                    TempData["Tipo"] = "success";
+                    return RedirectToAction(nameof(Index));
+                }
+                TempData["Mensaje"] = "Error en la validación del formulario.";
+                TempData["Tipo"] = "warning";
+            }
+            catch (Exception ex)
+            {
+                TempData["Mensaje"] = "Error inesperado: " + ex.Message;
+                TempData["Tipo"] = "error";
+            }
+            return View(inquilino);
+        }
+
+        // GET: Inquilino/EliminarConfirmado/5
         [HttpGet]
         public IActionResult EliminarConfirmado(int id)
         {
-        try
+            try
             {
-                repositorio.EliminarPropietario(id);
-                TempData["Mensaje"] = "¡Propietario eliminado correctamente!";
+                repositorio.EliminarInquilino(id);
+                TempData["Mensaje"] = "¡Inquilino eliminado correctamente!";
                 TempData["Tipo"] = "success";
             }
             catch (Exception ex)
@@ -121,6 +109,5 @@ namespace inmobiliaria_santi.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
-
     }
 }

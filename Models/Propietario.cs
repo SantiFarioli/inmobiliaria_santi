@@ -1,4 +1,4 @@
-namespace INMOBILIARIA_SANTI.Models
+namespace inmobiliaria_santi.Models
 {
     public class Propietario
     {

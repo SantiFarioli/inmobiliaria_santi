@@ -1,13 +1,12 @@
-@model IEnumerable<inmobiliaria_santi.Models.Propietario>
+@model IEnumerable<inmobiliaria_santi.Models.Inquilino>
 
 @{
-    ViewData["Title"] = "Listado de Propietarios";
+    ViewData["Title"] = "Listado de Inquilinos";
 }
 
-
 <div class="text-center mb-4">
-    <h1>Listado de Propietarios</h1>
-    <a class="btn btn-success" asp-action="Crear">Crear Propietario</a>
+    <h1>Listado de Inquilinos</h1>
+    <a class="btn btn-success mt-3" asp-action="Crear">Crear Inquilino</a>
 </div>
 
 @if (Model != null && Model.Any())
@@ -15,11 +14,11 @@
     <table class="table table-bordered table-striped table-hover">
         <thead class="table-primary">
             <tr>
-                <th>@nameof(inmobiliaria_santi.Models.Propietario.nombre)</th>
-                <th>@nameof(inmobiliaria_santi.Models.Propietario.apellido)</th>
-                <th>@nameof(inmobiliaria_santi.Models.Propietario.dni)</th>
-                <th>@nameof(inmobiliaria_santi.Models.Propietario.telefono)</th>
-                <th>@nameof(inmobiliaria_santi.Models.Propietario.email)</th>
+                <th>@nameof(inmobiliaria_santi.Models.Inquilino.nombre)</th>
+                <th>@nameof(inmobiliaria_santi.Models.Inquilino.apellido)</th>
+                <th>@nameof(inmobiliaria_santi.Models.Inquilino.dni)</th>
+                <th>@nameof(inmobiliaria_santi.Models.Inquilino.telefono)</th>
+                <th>@nameof(inmobiliaria_santi.Models.Inquilino.email)</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -33,9 +32,9 @@
                 <td>@item.telefono</td>
                 <td>@item.email</td>
                 <td>
-                    <a class="btn btn-info btn-sm" asp-action="Detalle" asp-route-id="@item.idPropietario">👁️ Detalle</a>
-                    <a class="btn btn-warning btn-sm" asp-action="Editar" asp-route-id="@item.idPropietario">✏️ Editar</a>
-                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmarEliminacion(@item.idPropietario)">🗑️ Eliminar</button>
+                    <a class="btn btn-info btn-sm" asp-action="Detalle" asp-route-id="@item.idInquilino">👁️ Detalle</a>
+                    <a class="btn btn-warning btn-sm" asp-action="Editar" asp-route-id="@item.idInquilino">✏️ Editar</a>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmarEliminacion(@item.idInquilino)">🗑️ Eliminar</button>
                 </td>
             </tr>
         }
@@ -45,7 +44,7 @@
 else
 {
     <div class="alert alert-info">
-        No hay propietarios registrados aún.
+        No hay inquilinos registrados aún.
     </div>
 }
 
@@ -54,7 +53,7 @@ else
         function confirmarEliminacion(id) {
             Swal.fire({
                 title: '¿Estás seguro?',
-                text: "Esta acción eliminará el propietario de la lista.",
+                text: "Esta acción eliminará el inquilino de la lista.",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -63,7 +62,7 @@ else
                 cancelButtonText: 'Cancelar'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = '/Propietario/EliminarConfirmado/' + id;
+                    window.location.href = '/Inquilino/EliminarConfirmado/' + id;
                 }
             });
         }
