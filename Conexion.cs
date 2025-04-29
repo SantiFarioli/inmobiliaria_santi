@@ -1,25 +1,42 @@
+using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
 using System;
 
-namespace INMOBILIARIA_SANTI.Models
+namespace inmobiliaria_santi.Models
 {
-    public class Conexion
+    public class Conexion(IConfiguration configuration)
     {
-        private string cadenaConexion = "Server=localhost;Database=inmobiliaria_santi;Uid=root;Pwd=admin;";
-        
-        public MySqlConnection ObtenerConexion()
+        private readonly string? _cadenaConexion = configuration.GetConnectionString("DefaultConnection");
+
+        public void AbrirConexion()
         {
-            MySqlConnection conexion = new MySqlConnection(cadenaConexion);
-            try
+            using (var conexion = new MySqlConnection(_cadenaConexion))
             {
-                conexion.Open();
-                Console.WriteLine("Conexión abierta.");
-                return conexion;
+                try
+                {
+                    conexion.Open();
+                    Console.WriteLine("Conexión abierta.");
+                }
+                catch (MySqlException ex)
+                {
+                    Console.WriteLine("Error al abrir la conexión: " + ex.Message);
+                }
             }
-            catch (MySqlException ex)
+        }
+
+        public void CerrarConexion()
+        {
+            using (var conexion = new MySqlConnection(_cadenaConexion))
             {
-                Console.WriteLine("Error al abrir la conexión: " + ex.Message);
-                throw;
+                try
+                {
+                    conexion.Close();
+                    Console.WriteLine("Conexión cerrada.");
+                }
+                catch (MySqlException ex)
+                {
+                    Console.WriteLine("Error al cerrar la conexión: " + ex.Message);
+                }
             }
         }
     }

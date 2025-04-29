@@ -5,12 +5,17 @@ namespace inmobiliaria_santi.Controllers
 {
     public class InquilinoController : Controller
     {
-        private readonly RepositorioInquilino repositorio = new RepositorioInquilino();
+        private readonly RepositorioInquilino _repositorio;
+
+        public InquilinoController(RepositorioInquilino repositorio)
+        {
+            _repositorio = repositorio;
+        }
 
         // GET: Inquilino
         public IActionResult Index()
         {
-            var inquilinos = repositorio.ObtenerTodos();
+            var inquilinos = _repositorio.ObtenerTodos();
             return View(inquilinos);
         }
 
@@ -29,7 +34,7 @@ namespace inmobiliaria_santi.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    repositorio.CrearInquilino(inquilino);
+                    _repositorio.CrearInquilino(inquilino);
                     TempData["Mensaje"] = "¡Inquilino creado correctamente!";
                     TempData["Tipo"] = "success";
                     return RedirectToAction(nameof(Index));
@@ -48,7 +53,7 @@ namespace inmobiliaria_santi.Controllers
         // GET: Inquilino/Detalle/5
         public IActionResult Detalle(int id)
         {
-            var inquilino = repositorio.ObtenerPorId(id);
+            var inquilino = _repositorio.ObtenerPorId(id);
             if (inquilino == null)
             {
                 return NotFound();
@@ -59,7 +64,7 @@ namespace inmobiliaria_santi.Controllers
         // GET: Inquilino/Editar/5
         public IActionResult Editar(int id)
         {
-            var inquilino = repositorio.ObtenerPorId(id);
+            var inquilino = _repositorio.ObtenerPorId(id);
             if (inquilino == null)
             {
                 return NotFound();
@@ -76,7 +81,7 @@ namespace inmobiliaria_santi.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    repositorio.ActualizarInquilino(inquilino);
+                    _repositorio.ActualizarInquilino(inquilino);
                     TempData["Mensaje"] = "¡Inquilino actualizado correctamente!";
                     TempData["Tipo"] = "success";
                     return RedirectToAction(nameof(Index));
@@ -98,7 +103,7 @@ namespace inmobiliaria_santi.Controllers
         {
             try
             {
-                repositorio.EliminarInquilino(id);
+                _repositorio.EliminarInquilino(id);
                 TempData["Mensaje"] = "¡Inquilino eliminado correctamente!";
                 TempData["Tipo"] = "success";
             }

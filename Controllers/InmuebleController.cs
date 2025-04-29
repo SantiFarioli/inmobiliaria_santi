@@ -6,22 +6,38 @@ namespace inmobiliaria_santi.Controllers
 {
     public class InmuebleController : Controller
     {
-        private readonly RepositorioInmueble repositorio = new RepositorioInmueble();
-        private readonly RepositorioPropietario repositorioPropietario = new RepositorioPropietario();
-        private readonly RepositorioTipoInmueble repositorioTipoInmueble = new RepositorioTipoInmueble();
+        private readonly RepositorioInmueble _repositorio;
+        private readonly RepositorioPropietario _repositorioPropietario;
+        private readonly RepositorioTipoInmueble _repositorioTipoInmueble;
+
+        public InmuebleController(RepositorioInmueble repositorio, 
+                          RepositorioPropietario repositorioPropietario, 
+                          RepositorioTipoInmueble repositorioTipoInmueble)
+        {
+            _repositorio = repositorio;
+            _repositorioPropietario = repositorioPropietario;
+            _repositorioTipoInmueble = repositorioTipoInmueble;
+        }
 
         // GET: Inmueble
         public IActionResult Index()
         {
-            var inmuebles = repositorio.ObtenerTodos();
+            var inmuebles = _repositorio.ObtenerTodos();
             return View(inmuebles);
         }
 
         // GET: Inmueble/Crear
         public IActionResult Crear()
         {
-            ViewBag.Propietarios = new SelectList(repositorioPropietario.ObtenerTodos(), "idPropietario", "apellido");
-            ViewBag.Tipos = new SelectList(repositorioTipoInmueble.ObtenerTodos(), "idTipoInmueble", "nombre");
+            ViewBag.Propietarios = new SelectList(
+                _repositorioPropietario.ObtenerTodos()
+                .Select(p => new { 
+                        p.idPropietario, 
+                        NombreCompleto = p.nombre + " " + p.apellido 
+                }), 
+                "idPropietario", "NombreCompleto");
+
+            ViewBag.Tipos = new SelectList(_repositorioTipoInmueble.ObtenerTodos(), "idTipoInmueble", "nombre");
             return View();
         }
 
@@ -34,7 +50,7 @@ namespace inmobiliaria_santi.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    repositorio.CrearInmueble(inmueble);
+                    _repositorio.CrearInmueble(inmueble);
                     TempData["Mensaje"] = "¡Inmueble creado correctamente!";
                     TempData["Tipo"] = "success";
                     return RedirectToAction(nameof(Index));
@@ -48,15 +64,15 @@ namespace inmobiliaria_santi.Controllers
                 TempData["Tipo"] = "error";
             }
 
-            ViewBag.Propietarios = new SelectList(repositorioPropietario.ObtenerTodos(), "idPropietario", "apellido", inmueble.idPropietario);
-            ViewBag.Tipos = new SelectList(repositorioTipoInmueble.ObtenerTodos(), "idTipoInmueble", "nombre", inmueble.idTipoInmueble);
+            ViewBag.Propietarios = new SelectList(_repositorioPropietario.ObtenerTodos(), "idPropietario", "apellido", inmueble.idPropietario);
+            ViewBag.Tipos = new SelectList(_repositorioTipoInmueble.ObtenerTodos(), "idTipoInmueble", "nombre", inmueble.idTipoInmueble);
             return View(inmueble);
         }
 
         // GET: Inmueble/Detalle/5
         public IActionResult Detalle(int id)
         {
-            var inmueble = repositorio.ObtenerPorId(id);
+            var inmueble = _repositorio.ObtenerPorId(id);
             if (inmueble == null)
             {
                 return NotFound();
@@ -67,14 +83,21 @@ namespace inmobiliaria_santi.Controllers
         // GET: Inmueble/Editar/5
         public IActionResult Editar(int id)
         {
-            var inmueble = repositorio.ObtenerPorId(id);
+            var inmueble = _repositorio.ObtenerPorId(id);
             if (inmueble == null)
             {
                 return NotFound();
             }
 
-            ViewBag.Propietarios = new SelectList(repositorioPropietario.ObtenerTodos(), "idPropietario", "apellido", inmueble.idPropietario);
-            ViewBag.Tipos = new SelectList(repositorioTipoInmueble.ObtenerTodos(), "idTipoInmueble", "nombre", inmueble.idTipoInmueble);
+            ViewBag.Propietarios = new SelectList(
+                _repositorioPropietario.ObtenerTodos()
+                .Select(p => new { 
+                    p.idPropietario, 
+                    NombreCompleto = p.nombre + " " + p.apellido 
+                }), 
+                "idPropietario", "NombreCompleto", inmueble.idPropietario);
+
+            ViewBag.Tipos = new SelectList(_repositorioTipoInmueble.ObtenerTodos(), "idTipoInmueble", "nombre", inmueble.idTipoInmueble);
             return View(inmueble);
         }
 
@@ -87,7 +110,7 @@ namespace inmobiliaria_santi.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    repositorio.ActualizarInmueble(inmueble);
+                    _repositorio.ActualizarInmueble(inmueble);
                     TempData["Mensaje"] = "¡Inmueble actualizado correctamente!";
                     TempData["Tipo"] = "success";
                     return RedirectToAction(nameof(Index));
@@ -101,8 +124,8 @@ namespace inmobiliaria_santi.Controllers
                 TempData["Tipo"] = "error";
             }
 
-            ViewBag.Propietarios = new SelectList(repositorioPropietario.ObtenerTodos(), "idPropietario", "apellido", inmueble.idPropietario);
-            ViewBag.Tipos = new SelectList(repositorioTipoInmueble.ObtenerTodos(), "idTipoInmueble", "nombre", inmueble.idTipoInmueble);
+            ViewBag.Propietarios = new SelectList(_repositorioPropietario.ObtenerTodos(), "idPropietario", "apellido", inmueble.idPropietario);
+            ViewBag.Tipos = new SelectList(_repositorioTipoInmueble.ObtenerTodos(), "idTipoInmueble", "nombre", inmueble.idTipoInmueble);
             return View(inmueble);
         }
 
@@ -112,7 +135,7 @@ namespace inmobiliaria_santi.Controllers
         {
             try
             {
-                repositorio.EliminarInmueble(id);
+                _repositorio.EliminarInmueble(id);
                 TempData["Mensaje"] = "¡Inmueble eliminado correctamente!";
                 TempData["Tipo"] = "success";
             }

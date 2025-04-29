@@ -1,17 +1,22 @@
 using Microsoft.AspNetCore.Mvc;
-using INMOBILIARIA_SANTI.Models;
 using inmobiliaria_santi.Models;
 
 namespace inmobiliaria_santi.Controllers
 {
     public class PropietarioController : Controller
     {
-        private readonly RepositorioPropietario repositorio = new RepositorioPropietario();
+        private readonly RepositorioPropietario _repositorio;
+
+        public PropietarioController(RepositorioPropietario repositorio)
+        {
+            _repositorio = repositorio;
+        }
+       
 
         // GET: Propietario
         public IActionResult Index()
         {
-            var propietarios = repositorio.ObtenerTodos();
+            var propietarios = _repositorio.ObtenerTodos();
             return View(propietarios);
         }
 
@@ -31,7 +36,7 @@ namespace inmobiliaria_santi.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    repositorio.CrearPropietario(propietario);
+                    _repositorio.CrearPropietario(propietario);
                     TempData["Mensaje"] = "Propietario creado correctamente.";
                     TempData["Tipo"] = "success"; // success | error | warning | info
                     return RedirectToAction(nameof(Index));
@@ -50,7 +55,7 @@ namespace inmobiliaria_santi.Controllers
         // GET: Propietario/Detalle/5
         public IActionResult Detalle(int id)
         {
-            var propietario = repositorio.ObtenerPorId(id);
+            var propietario = _repositorio.ObtenerPorId(id);
             if (propietario == null)
             {
                 return NotFound();
@@ -61,7 +66,7 @@ namespace inmobiliaria_santi.Controllers
         // GET: Propietario/Editar/5
         public IActionResult Editar(int id)
         {
-            var propietario = repositorio.ObtenerPorId(id);
+            var propietario = _repositorio.ObtenerPorId(id);
             if (propietario == null)
             {
                 return NotFound();
@@ -78,7 +83,7 @@ namespace inmobiliaria_santi.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    repositorio.ActualizarPropietario(propietario);
+                    _repositorio.ActualizarPropietario(propietario);
                     TempData["Mensaje"] = "Propietario editado correctamente.";
                     TempData["Tipo"] = "success";
                     return RedirectToAction(nameof(Index));
@@ -97,7 +102,7 @@ namespace inmobiliaria_santi.Controllers
         // GET: Propietario/Eliminar/5
         public IActionResult Eliminar(int id)
         {
-            var propietario = repositorio.ObtenerPorId(id);
+            var propietario = _repositorio.ObtenerPorId(id);
             if (propietario == null)
             {
                 return NotFound();
@@ -110,7 +115,7 @@ namespace inmobiliaria_santi.Controllers
         {
         try
             {
-                repositorio.EliminarPropietario(id);
+                _repositorio.EliminarPropietario(id);
                 TempData["Mensaje"] = "¡Propietario eliminado correctamente!";
                 TempData["Tipo"] = "success";
             }

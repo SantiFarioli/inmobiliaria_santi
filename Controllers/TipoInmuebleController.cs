@@ -5,12 +5,17 @@ namespace inmobiliaria_santi.Controllers
 {
     public class TipoInmuebleController : Controller
     {
-        private readonly RepositorioTipoInmueble repositorio = new RepositorioTipoInmueble();
+        private readonly RepositorioTipoInmueble _repositorio;
+
+        public TipoInmuebleController(RepositorioTipoInmueble repositorio)
+        {
+            _repositorio = repositorio;
+        }
 
         // GET: TipoInmueble
         public IActionResult Index()
         {
-            var tipos = repositorio.ObtenerTodos();
+            var tipos = _repositorio.ObtenerTodos();
             return View(tipos);
         }
 
@@ -29,7 +34,7 @@ namespace inmobiliaria_santi.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    repositorio.CrearTipoInmueble(tipo);
+                    _repositorio.CrearTipoInmueble(tipo);
                     TempData["Mensaje"] = "¡Tipo de inmueble creado correctamente!";
                     TempData["Tipo"] = "success";
                     return RedirectToAction(nameof(Index));
@@ -48,7 +53,7 @@ namespace inmobiliaria_santi.Controllers
         // GET: TipoInmueble/Editar/5
         public IActionResult Editar(int id)
         {
-            var tipo = repositorio.ObtenerPorId(id);
+            var tipo = _repositorio.ObtenerPorId(id);
             if (tipo == null)
             {
                 return NotFound();
@@ -65,7 +70,7 @@ namespace inmobiliaria_santi.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    repositorio.ActualizarTipoInmueble(tipo);
+                    _repositorio.ActualizarTipoInmueble(tipo);
                     TempData["Mensaje"] = "¡Tipo de inmueble actualizado correctamente!";
                     TempData["Tipo"] = "success";
                     return RedirectToAction(nameof(Index));
@@ -87,7 +92,7 @@ namespace inmobiliaria_santi.Controllers
         {
             try
             {
-                repositorio.EliminarTipoInmueble(id);
+                _repositorio.EliminarTipoInmueble(id);
                 TempData["Mensaje"] = "¡Tipo de inmueble eliminado correctamente!";
                 TempData["Tipo"] = "success";
             }

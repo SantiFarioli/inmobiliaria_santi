@@ -1,38 +1,23 @@
-using INMOBILIARIA_SANTI.Models; 
+using inmobiliaria_santi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Registrar servicios al contenedor
 builder.Services.AddControllersWithViews();
+
+// Inyectar IConfiguration para acceder a las configuraciones de appsettings.json
+builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+
+// Registrar los repositorios que vamos a utilizar
+builder.Services.AddScoped<RepositorioPropietario>();
+builder.Services.AddScoped<RepositorioInquilino>();
+builder.Services.AddScoped<RepositorioInmueble>();
+builder.Services.AddScoped<RepositorioTipoInmueble>();
+
 
 var app = builder.Build();
 
-// Probar conexión a la base de datos apenas inicia la app
-using (var scope = app.Services.CreateScope())
-{
-    try
-    {
-        Conexion conexionBD = new Conexion();
-        var conexion = conexionBD.ObtenerConexion();
-
-        if (conexion != null)
-        {
-            Console.WriteLine("Conexión establecida correctamente al iniciar la aplicación.");
-            conexion.Close();
-            Console.WriteLine("Conexión cerrada correctamente.");
-        }
-        else
-        {
-            Console.WriteLine("No se pudo conectar a la base de datos.");
-        }
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine("Error al intentar conectar: " + ex.Message);
-    }
-}
-
-// Configure the HTTP request pipeline.
+// Configuración del pipeline HTTP
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -41,14 +26,14 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
 
+// Configurar la autenticación (si es necesario)
 app.UseAuthorization();
 
+// Configuración de rutas del controlador
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
-
