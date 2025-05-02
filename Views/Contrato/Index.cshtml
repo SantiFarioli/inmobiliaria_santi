@@ -1,0 +1,72 @@
+@model IEnumerable<inmobiliaria_santi.Models.Contrato>
+
+@{
+    ViewData["Title"] = "Listado de Contratos";
+}
+
+<div class="text-center mb-4">
+    <h1>Listado de Contratos</h1>
+    <a class="btn btn-success mt-3" asp-action="Crear">Crear Contrato</a>
+</div>
+
+@if (Model != null && Model.Any())
+{
+    <table class="table table-bordered table-striped table-hover">
+        <thead class="table-primary">
+            <tr>
+                <th>@nameof(inmobiliaria_santi.Models.Contrato.idContrato)</th>
+                <th>@nameof(inmobiliaria_santi.Models.Contrato.idInquilino)</th>
+                <th>@nameof(inmobiliaria_santi.Models.Contrato.idInmueble)</th>
+                <th>@nameof(inmobiliaria_santi.Models.Contrato.fechaInicio)</th>
+                <th>@nameof(inmobiliaria_santi.Models.Contrato.fechaFin)</th>
+                <th>@nameof(inmobiliaria_santi.Models.Contrato.montoRenta)</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.idContrato</td>
+                <td>@item.idInquilino</td> <!-- Puedes mostrar nombre completo de inquilino si prefieres -->
+                <td>@item.idInmueble</td> <!-- O la dirección del inmueble si lo prefieres -->
+                <td>@item.fechaInicio.ToString("dd/MM/yyyy")</td>
+                <td>@item.fechaFin.ToString("dd/MM/yyyy")</td>
+                <td>@item.montoRenta.ToString("C")</td>
+                <td>
+                    <a class="btn btn-info btn-sm" asp-action="Detalle" asp-route-id="@item.idContrato">👁️ Detalle</a>
+                    <a class="btn btn-warning btn-sm" asp-action="Editar" asp-route-id="@item.idContrato">✏️ Editar</a>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmarEliminacion(@item.idContrato)">🗑️ Eliminar</button>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-info">
+        No hay contratos registrados aún.
+    </div>
+}
+
+@section Scripts {
+    <script>
+        function confirmarEliminacion(id) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "Esta acción eliminará el contrato de la lista.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/Contrato/EliminarConfirmado/' + id;
+                }
+            });
+        }
+    </script>
+}

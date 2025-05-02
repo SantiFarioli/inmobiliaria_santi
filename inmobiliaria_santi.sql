@@ -36,6 +36,7 @@ CREATE TABLE `contrato` (
   `fechaTerminacionTemprana` date DEFAULT NULL,
   `usuarioCreacion` varchar(255) DEFAULT NULL,
   `usuarioTerminacion` varchar(255) DEFAULT NULL,
+  `estado` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`idContrato`),
   KEY `idInmueble` (`idInmueble`),
   KEY `idInquilino` (`idInquilino`),
@@ -65,7 +66,7 @@ CREATE TABLE `inmueble` (
   `idPropietario` int NOT NULL,
   `idTipoInmueble` int NOT NULL,
   `direccion` varchar(50) NOT NULL,
-  `uso` varchar(10) NOT NULL,
+  `uso` varchar(50) DEFAULT NULL,
   `cantAmbiente` int NOT NULL,
   `valor` decimal(10,2) NOT NULL,
   `disponible` tinyint(1) DEFAULT '1',
@@ -75,7 +76,7 @@ CREATE TABLE `inmueble` (
   KEY `idTipoInmueble` (`idTipoInmueble`),
   CONSTRAINT `inmueble_ibfk_1` FOREIGN KEY (`idPropietario`) REFERENCES `propietario` (`idPropietario`),
   CONSTRAINT `inmueble_ibfk_2` FOREIGN KEY (`idTipoInmueble`) REFERENCES `tipoinmueble` (`idTipoInmueble`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -84,6 +85,7 @@ CREATE TABLE `inmueble` (
 
 LOCK TABLES `inmueble` WRITE;
 /*!40000 ALTER TABLE `inmueble` DISABLE KEYS */;
+INSERT INTO `inmueble` VALUES (1,1,2,'Autopista 25 de Mayo','Residencial',3,900000.00,1,1);
 /*!40000 ALTER TABLE `inmueble` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -103,7 +105,7 @@ CREATE TABLE `inquilino` (
   `email` varchar(30) DEFAULT NULL,
   `estado` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`idInquilino`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -112,6 +114,7 @@ CREATE TABLE `inquilino` (
 
 LOCK TABLES `inquilino` WRITE;
 /*!40000 ALTER TABLE `inquilino` DISABLE KEYS */;
+INSERT INTO `inquilino` VALUES (1,'Luciano','Perira','45678912','2664242526','q@h.com',1),(2,'Marcelo','Ortega','45326874','2665879895','marcelo@l.com.ar',1),(3,'nacho','escudero','12345682','2664421315','n@p.com',0);
 /*!40000 ALTER TABLE `inquilino` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -164,7 +167,7 @@ CREATE TABLE `propietario` (
   `email` varchar(50) DEFAULT NULL,
   `estado` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`idPropietario`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -173,6 +176,7 @@ CREATE TABLE `propietario` (
 
 LOCK TABLES `propietario` WRITE;
 /*!40000 ALTER TABLE `propietario` DISABLE KEYS */;
+INSERT INTO `propietario` VALUES (1,'Santiago','Farioli',33029917,'02664295320','santiago8773cba@gmail.com',1),(2,'Ivonne','Manosalva',37347150,'2664584796','ivonne.manosalva@uflouniversidad.edu.ar',1),(3,'Celeste','Farioli',56088419,'2664259874','celes@g.com',1),(4,'gil','locaaaa',12345678,'24826859','a@h.com',0),(5,'lurdes','perez',16846987,'2664781264','l@a.com',1);
 /*!40000 ALTER TABLE `propietario` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -188,7 +192,7 @@ CREATE TABLE `tipoinmueble` (
   `nombre` varchar(50) NOT NULL,
   `activo` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`idTipoInmueble`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -197,6 +201,7 @@ CREATE TABLE `tipoinmueble` (
 
 LOCK TABLES `tipoinmueble` WRITE;
 /*!40000 ALTER TABLE `tipoinmueble` DISABLE KEYS */;
+INSERT INTO `tipoinmueble` VALUES (1,'Departamento',1),(2,'Casa',1),(3,'Oficina',1),(4,'Local Comercial',1);
 /*!40000 ALTER TABLE `tipoinmueble` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -238,4 +243,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-27 10:22:03
+-- Dump completed on 2025-05-02 18:59:14

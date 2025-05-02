@@ -17,5 +17,6 @@ namespace inmobiliaria_santi.Models
         public DateTime? fechaTerminacionTemprana { get; set; }
         public string? usuarioCreacion { get; set; }
         public string? usuarioTerminacion { get; set; }
+        public bool estado { get; set; } // Activo o eliminado lógicamente
     }
 }
