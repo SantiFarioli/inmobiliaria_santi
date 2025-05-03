@@ -52,7 +52,7 @@
 
         <div class="mb-3">
             <label class="form-label">Multa por Terminación Temprana</label>
-            <p>@Model.multaTerminacionTemprana</p>
+            <p>@Model.multaTerminacionTemprana?.ToString("C")</p> <!-- Aplica formato monetario -->
         </div>
 
         <div class="mb-3">
@@ -60,7 +60,15 @@
             <p>@Model.fechaTerminacionTemprana?.ToString("dd/MM/yyyy")</p>
         </div>
 
-        <div class="text-center">
+        <!-- Botón para rescindir contrato solo visible si el contrato está activo -->
+        @if (Model.estado)  
+        {
+            <div class="text-center mt-4">
+                <a href="@Url.Action("RescindirContrato", "Contrato", new { id = Model.idContrato })" class="btn btn-danger">Rescindir Contrato</a>
+            </div>
+        }
+
+        <div class="text-center mt-4">
             <a asp-action="Index" class="btn btn-secondary">🔙 Volver al Listado</a>
         </div>
     </div>

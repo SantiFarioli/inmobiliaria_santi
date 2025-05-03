@@ -1,76 +1,50 @@
 @model inmobiliaria_santi.Models.Contrato
 
-@{
-    ViewData["Title"] = "Editar Contrato";
-}
-
-<div class="text-center mb-4">
-    <h1>Editar Contrato</h1>
-</div>
-
-<div class="card mx-auto" style="max-width: 700px;">
-    <div class="card-body">
-        <form asp-action="Editar" method="post">
-            <input type="hidden" asp-for="idContrato" />
-
-            <div class="mb-3">
-                <label asp-for="idInquilino" class="form-label">Inquilino</label>
-                <select asp-for="idInquilino" asp-items="ViewBag.Inquilinos" class="form-select">
-                    <option value="">Seleccione un inquilino</option>
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="idInmueble" class="form-label">Inmueble</label>
-                <select asp-for="idInmueble" asp-items="ViewBag.Inmuebles" class="form-select">
-                    <option value="">Seleccione un inmueble</option>
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="fechaInicio" class="form-label">Fecha de Inicio</label>
-                <input asp-for="fechaInicio" class="form-control" type="date" />
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="fechaFin" class="form-label">Fecha de Fin</label>
-                <input asp-for="fechaFin" class="form-control" type="date" />
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="montoRenta" class="form-label">Monto de Renta</label>
-                <input asp-for="montoRenta" class="form-control" type="number" step="0.01" min="0" />
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="deposito" class="form-label">Depósito</label>
-                <input asp-for="deposito" class="form-control" />
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="comision" class="form-label">Comisión</label>
-                <input asp-for="comision" class="form-control" />
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="condiciones" class="form-label">Condiciones</label>
-                <textarea asp-for="condiciones" class="form-control"></textarea>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="multaTerminacionTemprana" class="form-label">Multa por Terminación Temprana</label>
-                <input asp-for="multaTerminacionTemprana" class="form-control" type="number" step="0.01" min="0" />
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="fechaTerminacionTemprana" class="form-label">Fecha de Terminación Temprana</label>
-                <input asp-for="fechaTerminacionTemprana" class="form-control" type="date" />
-            </div>
-
-            <div class="text-center">
-                <button type="submit" class="btn btn-primary">💾 Guardar</button>
-                <a asp-action="Index" class="btn btn-secondary">🔙 Volver</a>
-            </div>
-        </form>
+<form asp-action="Editar">
+    <div class="form-group">
+        <label for="idInmueble">Inmueble</label>
+        <select class="form-control" asp-for="idInmueble" asp-items="ViewBag.Inmuebles"></select>
     </div>
-</div>
+    
+    <div class="form-group">
+        <label for="idInquilino">Inquilino</label>
+        <select class="form-control" asp-for="idInquilino" asp-items="ViewBag.Inquilinos"></select>
+    </div>
+
+    <div class="form-group">
+        <label for="fechaInicio">Fecha de Inicio</label>
+        <input type="date" class="form-control" asp-for="fechaInicio" />
+    </div>
+
+    <div class="form-group">
+        <label for="fechaFin">Fecha de Fin</label>
+        <input type="date" class="form-control" asp-for="fechaFin" />
+    </div>
+
+    <div class="form-group">
+        <label for="montoRenta">Monto de Renta</label>
+        <input type="number" class="form-control" asp-for="montoRenta" />
+    </div>
+
+    <div class="form-group">
+        <label for="deposito">Depósito</label>
+        <input type="text" class="form-control" asp-for="deposito" />
+    </div>
+
+    <div class="form-group">
+        <label for="comision">Comisión</label>
+        <input type="text" class="form-control" asp-for="comision" />
+    </div>
+
+    <div class="form-group">
+        <label for="condiciones">Condiciones</label>
+        <textarea class="form-control" asp-for="condiciones"></textarea>
+    </div>
+
+    <!-- Ocultando los campos multa y fecha de terminación temprana -->
+    @Html.HiddenFor(m => m.multaTerminacionTemprana)
+    @Html.HiddenFor(m => m.fechaTerminacionTemprana)
+    @Html.HiddenFor(m => m.porcentajeMulta)
+
+    <button type="submit" class="btn btn-primary">Actualizar Contrato</button>
+</form>

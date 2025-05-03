@@ -18,5 +18,6 @@ namespace inmobiliaria_santi.Models
         public string? usuarioCreacion { get; set; }
         public string? usuarioTerminacion { get; set; }
         public bool estado { get; set; } // Activo o eliminado lógicamente
+        public decimal? porcentajeMulta { get; set; }
     }
 }

@@ -35,8 +35,8 @@ namespace inmobiliaria_santi.Models
                             condiciones = reader.GetString(reader.GetOrdinal("condiciones")),
                             multaTerminacionTemprana = reader.IsDBNull(reader.GetOrdinal("multaTerminacionTemprana")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("multaTerminacionTemprana")),
                             fechaTerminacionTemprana = reader.IsDBNull(reader.GetOrdinal("fechaTerminacionTemprana")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("fechaTerminacionTemprana")),
-                            usuarioCreacion = reader.GetString("usuarioCreacion"),
-                            usuarioTerminacion = reader.GetString("usuarioTerminacion")
+                            usuarioCreacion = reader.IsDBNull(reader.GetOrdinal("usuarioCreacion")) ? null : reader.GetString(reader.GetOrdinal("usuarioCreacion")),
+                            usuarioTerminacion = reader.IsDBNull(reader.GetOrdinal("usuarioTerminacion")) ? null : reader.GetString(reader.GetOrdinal("usuarioTerminacion"))
                         });
                     }
                 }
@@ -71,8 +71,8 @@ namespace inmobiliaria_santi.Models
                             condiciones = reader.GetString(reader.GetOrdinal("condiciones")),
                             multaTerminacionTemprana = reader.IsDBNull(reader.GetOrdinal("multaTerminacionTemprana")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("multaTerminacionTemprana")),
                             fechaTerminacionTemprana = reader.IsDBNull(reader.GetOrdinal("fechaTerminacionTemprana")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("fechaTerminacionTemprana")),
-                            usuarioCreacion = reader.GetString(reader.GetOrdinal("usuarioCreacion")),
-                            usuarioTerminacion = reader.GetString(reader.GetOrdinal("usuarioTerminacion"))
+                            usuarioCreacion = reader.IsDBNull(reader.GetOrdinal("usuarioCreacion")) ? null : reader.GetString(reader.GetOrdinal("usuarioCreacion")),
+                            usuarioTerminacion = reader.IsDBNull(reader.GetOrdinal("usuarioTerminacion")) ? null : reader.GetString(reader.GetOrdinal("usuarioTerminacion"))
                         };
                     }
                 }
@@ -104,8 +104,8 @@ namespace inmobiliaria_santi.Models
                     comando.Parameters.AddWithValue("@condiciones", contrato.condiciones);
                     comando.Parameters.AddWithValue("@multaTerminacionTemprana", contrato.multaTerminacionTemprana ?? (object)DBNull.Value);
                     comando.Parameters.AddWithValue("@fechaTerminacionTemprana", contrato.fechaTerminacionTemprana ?? (object)DBNull.Value);
-                    comando.Parameters.AddWithValue("@usuarioCreacion", contrato.usuarioCreacion);
-                    comando.Parameters.AddWithValue("@usuarioTerminacion", contrato.usuarioTerminacion);
+                    comando.Parameters.AddWithValue("@usuarioCreacion", string.IsNullOrEmpty(contrato.usuarioCreacion) ? (object)DBNull.Value : contrato.usuarioCreacion);
+                    comando.Parameters.AddWithValue("@usuarioTerminacion", string.IsNullOrEmpty(contrato.usuarioTerminacion) ? (object)DBNull.Value : contrato.usuarioTerminacion);
 
                     conexion.Open();
                     comando.ExecuteNonQuery();
@@ -138,8 +138,8 @@ namespace inmobiliaria_santi.Models
                     comando.Parameters.AddWithValue("@condiciones", contrato.condiciones);
                     comando.Parameters.AddWithValue("@multaTerminacionTemprana", contrato.multaTerminacionTemprana ?? (object)DBNull.Value);
                     comando.Parameters.AddWithValue("@fechaTerminacionTemprana", contrato.fechaTerminacionTemprana ?? (object)DBNull.Value);
-                    comando.Parameters.AddWithValue("@usuarioCreacion", contrato.usuarioCreacion);
-                    comando.Parameters.AddWithValue("@usuarioTerminacion", contrato.usuarioTerminacion);
+                    comando.Parameters.AddWithValue("@usuarioCreacion", string.IsNullOrEmpty(contrato.usuarioCreacion) ? (object)DBNull.Value : contrato.usuarioCreacion);
+                    comando.Parameters.AddWithValue("@usuarioTerminacion", string.IsNullOrEmpty(contrato.usuarioTerminacion) ? (object)DBNull.Value : contrato.usuarioTerminacion);
 
                     conexion.Open();
                     comando.ExecuteNonQuery();

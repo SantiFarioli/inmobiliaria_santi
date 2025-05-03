@@ -176,6 +176,8 @@ namespace inmobiliaria_santi.Controllers
             {
              return NotFound();
             }
+
+            ViewBag.PuedeRescindir = contrato.estado == true;
             return View(contrato);  // Devuelve la vista con el contrato encontrado
         }
 
@@ -197,5 +199,67 @@ namespace inmobiliaria_santi.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
+
+        // GET: Contrato/RescindirContrato/5
+        public IActionResult RescindirContrato(int id)
+        {
+            var contrato = _repositorioContrato.ObtenerPorId(id);
+            if (contrato == null)
+            {
+                return NotFound();
+            }
+
+            // Calcular la multa según el tiempo restante en el contrato
+            var fechaFin = contrato.fechaFin;
+            var hoy = DateTime.Now;
+            int mesesRestantes = ((fechaFin.Year - hoy.Year) * 12) + fechaFin.Month - hoy.Month;
+
+            // Calcular el porcentaje de multa según el tiempo restante
+            decimal porcentajeMulta = mesesRestantes < 6 ? 0.10m : 0.15m;
+            decimal multa = contrato.montoRenta * porcentajeMulta;
+
+            // Preparar el contrato para ser actualizado
+            contrato.multaTerminacionTemprana = multa;
+            contrato.fechaTerminacionTemprana = hoy;  // Fecha de rescisión
+            contrato.porcentajeMulta = porcentajeMulta;
+
+            // Mostrar la vista de rescisión con la multa calculada
+            return View(contrato);
+        }
+
+        // POST: Contrato/RescindirContrato/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult RescindirContrato(Contrato contrato)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    // Actualizar los datos del contrato con la rescisión
+                    _repositorioContrato.ActualizarContrato(contrato);
+
+                    // Marcar el contrato como rescindido en lugar de eliminarlo
+                    contrato.estado = false; // Suponiendo que el estado 'false' significa rescindido
+                    _repositorioContrato.ActualizarContrato(contrato);
+
+                    TempData["Mensaje"] = "Contrato rescindido correctamente con la multa aplicada";
+                    TempData["Tipo"] = "success";
+
+                    return RedirectToAction(nameof(Index));
+                }
+
+                TempData["Mensaje"] = "Error al rescindir el contrato.";
+                TempData["Tipo"] = "warning";
+            }
+            catch (Exception ex)
+            {
+                TempData["Mensaje"] = "Error inesperado: " + ex.Message;
+                TempData["Tipo"] = "error";
+            }
+
+            return View(contrato);
+        }
+
     }
 }
