@@ -236,12 +236,19 @@ namespace inmobiliaria_santi.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    // Actualizar los datos del contrato con la rescisión
-                    _repositorioContrato.ActualizarContrato(contrato);
-
+                    var contratoExistente = _repositorioContrato.ObtenerPorId(contrato.idContrato);
+                    if (contratoExistente == null)
+                    {
+                        return NotFound();
+                    }   
+                                      
                     // Marcar el contrato como rescindido en lugar de eliminarlo
-                    contrato.estado = false; // Suponiendo que el estado 'false' significa rescindido
-                    _repositorioContrato.ActualizarContrato(contrato);
+                    contratoExistente.estado = false; // Suponiendo que el estado 'false' significa rescindido
+                    contratoExistente.fechaTerminacionTemprana = DateTime.Now; // Fecha de rescisión
+                    contratoExistente.multaTerminacionTemprana = contrato.multaTerminacionTemprana; // Multa calculada
+                    contratoExistente.porcentajeMulta = contrato.porcentajeMulta; // Porcentaje de multa calculado
+                    
+                    _repositorioContrato.ActualizarContrato(contratoExistente);
 
                     TempData["Mensaje"] = "Contrato rescindido correctamente con la multa aplicada";
                     TempData["Tipo"] = "success";

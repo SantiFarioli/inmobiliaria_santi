@@ -1,75 +1,122 @@
 @model inmobiliaria_santi.Models.Contrato
 
 @{
-    ViewData["Title"] = "Detalle del Contrato";
+    ViewData["Title"] = "Detalle Contrato";
 }
 
-<div class="text-center mb-4">
-    <h1>Detalle del Contrato</h1>
+<h2 class="text-center">Detalle de Contrato</h2>
+
+<div>
+    <h4>Contrato</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            Propietario
+        </dt>
+        <dd class="col-sm-10">
+            @Model.PropietarioNombre @Model.PropietarioApellido
+        </dd>
+
+        <dt class="col-sm-2">
+            Inquilino
+        </dt>
+        <dd class="col-sm-10">
+            @Model.InquilinoNombre @Model.InquilinoApellido
+        </dd>
+
+        <dt class="col-sm-2">
+            Dirección del Inmueble
+        </dt>
+        <dd class="col-sm-10">
+            @Model.InmuebleDireccion
+        </dd>
+
+        <dt class="col-sm-2">
+            Fecha de Inicio
+        </dt>
+        <dd class="col-sm-10">
+            @Model.fechaInicio.ToString("dd/MM/yyyy")
+        </dd>
+
+        <dt class="col-sm-2">
+            Fecha de Fin
+        </dt>
+        <dd class="col-sm-10">
+            @Model.fechaFin.ToString("dd/MM/yyyy")
+        </dd>
+
+        <dt class="col-sm-2">
+            Monto de Renta
+        </dt>
+        <dd class="col-sm-10">
+            @Model.montoRenta.ToString("C")
+        </dd>
+
+        <dt class="col-sm-2">
+            Depósito
+        </dt>
+        <dd class="col-sm-10">
+            @Model.deposito.ToString("C")
+        </dd>
+
+        <dt class="col-sm-2">
+            Comisión
+        </dt>
+        <dd class="col-sm-10">
+            @Model.comision.ToString("C")
+        </dd>
+
+        <dt class="col-sm-2">
+            Condiciones
+        </dt>
+        <dd class="col-sm-10">
+            @Model.condiciones
+        </dd>
+
+        @if (Model.estado == false) // Mostrar campos adicionales si el contrato está rescindido
+        {
+            <dt class="col-sm-2">
+                Estado
+            </dt>
+            <dd class="col-sm-10">
+                Rescindido
+            </dd>
+
+            <dt class="col-sm-2">
+                Fecha de Terminación Temprana
+            </dt>
+            <dd class="col-sm-10">
+                @Model.fechaTerminacionTemprana?.ToString("dd/MM/yyyy")
+            </dd>
+
+            <dt class="col-sm-2">
+                Multa por Terminación Temprana
+            </dt>
+            <dd class="col-sm-10">
+                @(Model.multaTerminacionTemprana?.ToString("C") ?? "N/A")
+            </dd>
+
+            <dt class="col-sm-2">
+                Porcentaje de Multa
+            </dt>
+            <dd class="col-sm-10">
+                @(Model.porcentajeMulta.HasValue ? (Model.porcentajeMulta.Value * 100).ToString("F2") + "%" : "N/A")
+            </dd>
+
+            <dt class="col-sm-2">
+                Usuario que Terminó el Contrato
+            </dt>
+            <dd class="col-sm-10">
+                @Model.usuarioTerminacion
+            </dd>
+        }
+    </dl>
 </div>
 
-<div class="card mx-auto" style="max-width: 700px;">
-    <div class="card-body">
-        <div class="mb-3">
-            <label class="form-label">Inquilino</label>
-            <p>@Model.idInquilino</p>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Inmueble</label>
-            <p>@Model.idInmueble</p>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Fecha de Inicio</label>
-            <p>@Model.fechaInicio.ToString("dd/MM/yyyy")</p>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Fecha de Fin</label>
-            <p>@Model.fechaFin.ToString("dd/MM/yyyy")</p>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Monto de Renta</label>
-            <p>@Model.montoRenta.ToString("C")</p>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Depósito</label>
-            <p>@Model.deposito</p>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Comisión</label>
-            <p>@Model.comision</p>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Condiciones</label>
-            <p>@Model.condiciones</p>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Multa por Terminación Temprana</label>
-            <p>@Model.multaTerminacionTemprana?.ToString("C")</p> <!-- Aplica formato monetario -->
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Fecha de Terminación Temprana</label>
-            <p>@Model.fechaTerminacionTemprana?.ToString("dd/MM/yyyy")</p>
-        </div>
-
-        <!-- Botón para rescindir contrato solo visible si el contrato está activo -->
-        @if (Model.estado)  
-        {
-            <div class="text-center mt-4">
-                <a href="@Url.Action("RescindirContrato", "Contrato", new { id = Model.idContrato })" class="btn btn-danger">Rescindir Contrato</a>
-            </div>
-        }
-
-        <div class="text-center mt-4">
-            <a asp-action="Index" class="btn btn-secondary">🔙 Volver al Listado</a>
-        </div>
-    </div>
+<div class="text-center">
+    @if (Model.estado == true)  // Mostrar solo si el contrato no ha sido rescindido
+    {
+        <a asp-action="RescindirContrato" asp-route-id="@Model.idContrato" class="btn btn-danger">Rescindir Contrato</a>
+    }
+    <a asp-action="Index" class="btn btn-primary">Volver al listado</a>
 </div>

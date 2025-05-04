@@ -15,11 +15,13 @@
         <thead class="table-primary">
             <tr>
                 <th>@nameof(inmobiliaria_santi.Models.Contrato.idContrato)</th>
-                <th>@nameof(inmobiliaria_santi.Models.Contrato.idInquilino)</th>
-                <th>@nameof(inmobiliaria_santi.Models.Contrato.idInmueble)</th>
+                <th>@nameof(inmobiliaria_santi.Models.Contrato.InquilinoNombre)</th> <!-- Nombre completo del inquilino -->
+                <th>@nameof(inmobiliaria_santi.Models.Contrato.InmuebleDireccion)</th> <!-- Dirección del inmueble -->
+                <th>@nameof(inmobiliaria_santi.Models.Contrato.PropietarioNombre)</th> <!-- Nombre completo del propietario -->
                 <th>@nameof(inmobiliaria_santi.Models.Contrato.fechaInicio)</th>
                 <th>@nameof(inmobiliaria_santi.Models.Contrato.fechaFin)</th>
                 <th>@nameof(inmobiliaria_santi.Models.Contrato.montoRenta)</th>
+                <th>Contrato Rescindido</th> <!-- Nueva columna -->
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -28,11 +30,22 @@
         {
             <tr>
                 <td>@item.idContrato</td>
-                <td>@item.idInquilino</td> <!-- Puedes mostrar nombre completo de inquilino si prefieres -->
-                <td>@item.idInmueble</td> <!-- O la dirección del inmueble si lo prefieres -->
+                <td>@item.InquilinoNombre @item.InquilinoApellido</td> <!-- Nombre completo del inquilino -->
+                <td>@item.InmuebleDireccion</td> <!-- Dirección del inmueble -->
+                <td>@item.PropietarioNombre @item.PropietarioApellido</td> <!-- Nombre completo del propietario -->
                 <td>@item.fechaInicio.ToString("dd/MM/yyyy")</td>
                 <td>@item.fechaFin.ToString("dd/MM/yyyy")</td>
-                <td>@item.montoRenta.ToString("C")</td>
+                <td>@item.montoRenta.ToString("C")</td> <!-- Mostrar en formato de moneda -->
+                <td>
+                    @if (item.estado == false)  
+                    {
+                        <span class="badge bg-danger">Rescindido</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success">Activo</span>
+                    }
+                </td>
                 <td>
                     <a class="btn btn-info btn-sm" asp-action="Detalle" asp-route-id="@item.idContrato">👁️ Detalle</a>
                     <a class="btn btn-warning btn-sm" asp-action="Editar" asp-route-id="@item.idContrato">✏️ Editar</a>

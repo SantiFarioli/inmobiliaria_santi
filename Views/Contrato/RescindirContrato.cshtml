@@ -3,6 +3,8 @@
 <h2>Rescindir Contrato</h2>
 
 <form asp-action="RescindirContrato">
+    <input type="hidden" asp-for="idContrato" />
+    
     <div class="form-group">
         <label for="multaTerminacionTemprana">Multa por Terminación Temprana</label>
         <input type="number" class="form-control" asp-for="multaTerminacionTemprana" readonly />
