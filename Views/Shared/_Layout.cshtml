@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+@using System.Security.Claims
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -37,6 +40,24 @@
                     <li class="nav-item center"></li>
                         <a class="nav-link text-white" asp-area="" asp-controller="Pago" asp-action="Index">Pagos</a>
                     </li>
+                    @if (User.Identity?.IsAuthenticated ?? false)
+                    {
+                        <li class="nav-item">
+                            <span class="nav-link text-light">Hola, @User.FindFirst("NombreCompleto")?.Value 👋</span>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" asp-controller="Usuario" asp-action="Perfil">Mi Perfil</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" asp-controller="Usuario" asp-action="Logout">Cerrar sesión</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-white" asp-controller="Usuario" asp-action="Login">Iniciar sesión</a>
+                        </li>
+                    }
                 </ul>
             </div>
         </div>

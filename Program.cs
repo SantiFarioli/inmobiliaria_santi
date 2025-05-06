@@ -1,4 +1,5 @@
 using inmobiliaria_santi.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +8,15 @@ builder.Services.AddControllersWithViews();
 
 // Inyectar IConfiguration para acceder a las configuraciones de appsettings.json
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Usuarios/Login";
+        options.LogoutPath = "/Usuarios/Logout";
+    });
+
+builder.Services.AddAuthorization();
 
 // Registrar los repositorios que vamos a utilizar
 builder.Services.AddScoped<RepositorioPropietario>();
@@ -31,6 +41,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 // Configurar la autenticación (si es necesario)
+app.UseAuthentication();
 app.UseAuthorization();
 
 // Configuración de rutas del controlador

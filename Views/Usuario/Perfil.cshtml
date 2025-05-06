@@ -1,0 +1,19 @@
+@model inmobiliaria_santi.Models.Usuario
+@{
+    ViewData["Title"] = "Mi Perfil";
+}
+
+<h2 class="text-center my-4">Mi Perfil</h2>
+
+<div class="card mx-auto" style="max-width: 500px;">
+    <div class="card-body">
+        <h5 class="card-title">@Model.nombre @Model.apellido</h5>
+        <p class="card-text"><strong>Email:</strong> @Model.email</p>
+        <p class="card-text"><strong>Rol:</strong> @(Model.rol == 1 ? "Administrador" : "Empleado")</p>
+
+        @if (!string.IsNullOrEmpty(Model.avatar))
+        {
+            <img src="@Model.avatar" alt="Avatar" class="img-thumbnail mt-3" style="max-height: 150px;" />
+        }
+    </div>
+</div>

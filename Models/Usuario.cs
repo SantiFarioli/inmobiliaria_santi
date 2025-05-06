@@ -13,4 +13,11 @@ namespace inmobiliaria_santi.Models
         public int rol { get; set; }
         public bool estado { get; set; }
     }
+
+        public enum RolUsuario
+    {
+        Administrador = 1,
+        Empleado = 2,
+    }
+    
 }

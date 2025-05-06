@@ -1,0 +1,30 @@
+@{
+    ViewData["Title"] = "Iniciar Sesión";
+}
+
+<h2 class="text-center my-4">Iniciar Sesión</h2>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <form asp-action="Login" method="post">
+            <div class="form-group mb-3">
+                <label for="email">Email</label>
+                <input type="email" name="email" class="form-control" required />
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="contrasena">Contraseña</label>
+                <input type="password" name="contrasena" class="form-control" required />
+            </div>
+
+            @if (ViewBag.Mensaje != null)
+            {
+                <div class="alert alert-danger">@ViewBag.Mensaje</div>
+            }
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+            </div>
+        </form>
+    </div>
+</div>
