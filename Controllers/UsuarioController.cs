@@ -70,7 +70,7 @@ namespace inmobiliaria_santi.Controllers
             var usuario = _repo.ObtenerPorEmail(email);
             return View(usuario);
         }
-
+        
         [Authorize(Roles = "Administrador")]
         public IActionResult Alta()
         {
@@ -81,9 +81,40 @@ namespace inmobiliaria_santi.Controllers
         [Authorize(Roles = "Administrador")]
         public IActionResult Alta(Usuario u)
         {
-            _repo.Alta(u);
-            TempData["Mensaje"] = "Usuario creado correctamente";
-            return RedirectToAction("Index", "Home");
+            try
+            {
+                if (u.AvatarFile != null && u.AvatarFile.Length > 0)
+                {
+                    var carpetaDestino = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", "avatares");
+                    if (!Directory.Exists(carpetaDestino))
+                        Directory.CreateDirectory(carpetaDestino);
+
+                    var nombreArchivo = $"avatar_{Guid.NewGuid():N}" + Path.GetExtension(u.AvatarFile.FileName);
+                    var rutaCompleta = Path.Combine(carpetaDestino, nombreArchivo);
+
+                    using (var stream = new FileStream(rutaCompleta, FileMode.Create))
+                    {
+                        u.AvatarFile.CopyTo(stream);
+                    }
+
+                    // Guardamos la ruta relativa
+                    u.avatar = "/img/avatares/" + nombreArchivo;
+                }
+
+                u.contrasena = HashHelper.CalcularHash(u.contrasena ?? "");
+                _repo.Alta(u);
+
+                TempData["Mensaje"] = "Usuario creado correctamente";
+                TempData["Tipo"] = "success";
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                TempData["Mensaje"] = "Error al crear el usuario: " + ex.Message;
+                TempData["Tipo"] = "error";
+                return View(u);
+            }
         }
+
     }
 }

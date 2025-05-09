@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using inmobiliaria_santi.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace inmobiliaria_santi.Controllers
 {
+    [Authorize]
     public class InmuebleController : Controller
     {
         private readonly RepositorioInmueble _repositorio;

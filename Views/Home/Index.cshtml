@@ -1,8 +1,17 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
-
-<div class="text-center">
-    <h1 class="display-4">Bienvenidos</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+﻿<div class="bienvenida w-100">
+    <div class="bienvenida-overlay">
+        <h1 class="display-4">Bienvenido a Inmobiliaria Santi</h1>
+        <p class="lead mt-3">
+            @if (User.Identity?.IsAuthenticated ?? false)
+            {
+                <text>Hola, @User.FindFirst("NombreCompleto")?.Value 👋</text><br />
+                <a class="btn btn-success mt-3" asp-controller="Usuario" asp-action="Perfil">Ir a mi perfil</a>
+            }
+            else
+            {
+                <text>Por favor, inicie sesión para acceder al sistema.</text><br />
+                <a class="btn btn-light mt-3" asp-controller="Usuario" asp-action="Login">Iniciar sesión</a>
+            }
+        </p>
+    </div>
 </div>

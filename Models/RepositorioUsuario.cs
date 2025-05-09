@@ -40,7 +40,7 @@ namespace inmobiliaria_santi.Models
         public Usuario? ValidarUsuario(string email, string clave)
         {
             var usuario = ObtenerPorEmail(email);
-            if (usuario != null && usuario.contrasena == clave) // ¡IMPORTANTE! Acá luego pondremos encriptación
+            if (usuario != null && usuario.contrasena == HashHelper.CalcularHash(clave))
                 return usuario;
             return null;
         }

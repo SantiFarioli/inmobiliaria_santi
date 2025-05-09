@@ -20,3 +20,25 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.bienvenida {
+  background-image: url('/img/inmobiliaria-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+}
+.bienvenida-overlay {
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 40px;
+  border-radius: 10px;
+}
+
