@@ -1,0 +1,46 @@
+@model inmobiliaria_santi.Models.Pago
+@{
+    ViewData["Title"] = "Editar Pago";
+}
+
+<h2 class="text-center my-4">Editar Pago</h2>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow p-4">
+            <form asp-action="Editar" method="post">
+                <input type="hidden" asp-for="idPago" />
+
+                <div class="form-group mb-3">
+                    <label asp-for="idContrato" class="form-label">ID Contrato</label>
+                    <input asp-for="idContrato" class="form-control" readonly />
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="nroPago" class="form-label">Número de Pago</label>
+                    <input asp-for="nroPago" class="form-control" readonly />
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="fechaPago" class="form-label">Fecha</label>
+                    <input asp-for="fechaPago" class="form-control" type="date" readonly />
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="importe" class="form-label">Importe</label>
+                    <input asp-for="importe" class="form-control" readonly />
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="detalle" class="form-label">Detalle</label>
+                    <textarea asp-for="detalle" class="form-control"></textarea>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    <a asp-action="Index" class="btn btn-secondary ms-2">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
