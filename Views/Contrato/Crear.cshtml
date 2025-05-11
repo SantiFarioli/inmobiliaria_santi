@@ -8,48 +8,58 @@
     <h1>Crear Contrato</h1>
 </div>
 
-<form asp-action="Crear">
+<form asp-action="Crear" method="post">
+    @Html.ValidationSummary(true, "", new { @class = "text-danger text-center" })
+
     <div class="form-group col-md-6 mx-auto">
         <label for="idInmueble">Inmueble</label>
         <select class="form-control" asp-for="idInmueble" asp-items="ViewBag.Inmuebles"></select>
+        <span asp-validation-for="idInmueble" class="text-danger"></span>
     </div>
-    
+
     <div class="form-group col-md-6 mx-auto">
         <label for="idInquilino">Inquilino</label>
         <select class="form-control" asp-for="idInquilino" asp-items="ViewBag.Inquilinos"></select>
+        <span asp-validation-for="idInquilino" class="text-danger"></span>
     </div>
 
     <div class="form-group col-md-6 mx-auto">
         <label for="fechaInicio">Fecha de Inicio</label>
         <input type="date" class="form-control" asp-for="fechaInicio" />
+        <span asp-validation-for="fechaInicio" class="text-danger"></span>
     </div>
 
     <div class="form-group col-md-6 mx-auto">
         <label for="fechaFin">Fecha de Fin</label>
         <input type="date" class="form-control" asp-for="fechaFin" />
+        <span asp-validation-for="fechaFin" class="text-danger"></span>
     </div>
 
     <div class="form-group col-md-6 mx-auto">
         <label for="montoRenta">Monto de Renta</label>
         <input type="number" class="form-control" asp-for="montoRenta" />
+        <span asp-validation-for="montoRenta" class="text-danger"></span>
     </div>
 
     <div class="form-group col-md-6 mx-auto">
         <label for="deposito">Depósito</label>
-        <input type="text" class="form-control" asp-for="deposito" />
+        <input type="number" class="form-control" asp-for="deposito" />
+        <span asp-validation-for="deposito" class="text-danger"></span>
     </div>
 
     <div class="form-group col-md-6 mx-auto">
         <label for="comision">Comisión</label>
-        <input type="text" class="form-control" asp-for="comision" />
+        <input type="number" class="form-control" asp-for="comision" />
+        <span asp-validation-for="comision" class="text-danger"></span>
     </div>
 
     <div class="form-group col-md-6 mx-auto">
         <label for="condiciones">Condiciones</label>
         <textarea class="form-control" asp-for="condiciones"></textarea>
+        <span asp-validation-for="condiciones" class="text-danger"></span>
     </div>
 
-    <!-- Ocultando los campos multa y fecha de terminación temprana -->
+    <!-- Ocultando campos que se completan luego -->
     @Html.HiddenFor(m => m.multaTerminacionTemprana)
     @Html.HiddenFor(m => m.fechaTerminacionTemprana)
     @Html.HiddenFor(m => m.porcentajeMulta)
@@ -57,7 +67,9 @@
     @Html.HiddenFor(m => m.usuarioCreacion)
     @Html.HiddenFor(m => m.estado)
 
-
     <button type="submit" class="btn btn-primary mx-auto d-block">Crear Contrato</button>
-
 </form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
