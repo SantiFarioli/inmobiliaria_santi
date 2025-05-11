@@ -14,7 +14,7 @@ namespace inmobiliaria_santi.Models
         public string? usuarioCreacion { get; set; }
         public string? usuarioAnulacion { get; set; }
         public string? usuarioEliminacion { get; set; }
-        public Contrato? Contrato { get; set; }
+        public string? ContratoResumen { get; set; }
 
     }
 }

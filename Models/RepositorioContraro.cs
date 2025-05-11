@@ -29,7 +29,7 @@ namespace inmobiliaria_santi.Models
                         c.{nameof(Contrato.multaTerminacionTemprana)},
                         c.{nameof(Contrato.fechaTerminacionTemprana)},
                         c.{nameof(Contrato.usuarioCreacion)},
-                        c.{nameof(Contrato.usuarioTerminacion)},
+                        c.{nameof(Contrato.usuarioEliminacion)},
                         c.{nameof(Contrato.estado)},
                         c.{nameof(Contrato.porcentajeMulta)},
                         i.{nameof(Inmueble.direccion)} AS {nameof(Contrato.InmuebleDireccion)},
@@ -65,7 +65,7 @@ namespace inmobiliaria_santi.Models
                                 multaTerminacionTemprana = reader.IsDBNull(reader.GetOrdinal(nameof(Contrato.multaTerminacionTemprana))) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal(nameof(Contrato.multaTerminacionTemprana))),
                                 fechaTerminacionTemprana = reader.IsDBNull(reader.GetOrdinal(nameof(Contrato.fechaTerminacionTemprana))) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal(nameof(Contrato.fechaTerminacionTemprana))),
                                 usuarioCreacion = reader.IsDBNull(reader.GetOrdinal(nameof(Contrato.usuarioCreacion))) ? null : reader.GetString(nameof(Contrato.usuarioCreacion)),
-                                usuarioTerminacion = reader.IsDBNull(reader.GetOrdinal(nameof(Contrato.usuarioTerminacion))) ? null : reader.GetString(nameof(Contrato.usuarioTerminacion)),
+                                usuarioEliminacion = reader.IsDBNull(reader.GetOrdinal(nameof(Contrato.usuarioEliminacion))) ? null : reader.GetString(nameof(Contrato.usuarioEliminacion)),
                                 estado = reader.GetBoolean(reader.GetOrdinal(nameof(Contrato.estado))), // Asegúrate de usar GetBoolean para tipo tinyint(1)
                                 porcentajeMulta = reader.IsDBNull(reader.GetOrdinal(nameof(Contrato.porcentajeMulta))) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal(nameof(Contrato.porcentajeMulta))),
                                 InmuebleDireccion = reader.GetString(nameof(Contrato.InmuebleDireccion)),
@@ -107,7 +107,7 @@ namespace inmobiliaria_santi.Models
                         c.{nameof(Contrato.multaTerminacionTemprana)},
                         c.{nameof(Contrato.fechaTerminacionTemprana)},
                         c.{nameof(Contrato.usuarioCreacion)},
-                        c.{nameof(Contrato.usuarioTerminacion)},
+                        c.{nameof(Contrato.usuarioEliminacion)},
                         c.{nameof(Contrato.estado)},
                         c.{nameof(Contrato.porcentajeMulta)},
                         i.{nameof(Inmueble.direccion)} AS {nameof(Contrato.InmuebleDireccion)},
@@ -144,7 +144,7 @@ namespace inmobiliaria_santi.Models
                                 multaTerminacionTemprana = reader.IsDBNull(reader.GetOrdinal(nameof(Contrato.multaTerminacionTemprana))) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal(nameof(Contrato.multaTerminacionTemprana))),
                                 fechaTerminacionTemprana = reader.IsDBNull(reader.GetOrdinal(nameof(Contrato.fechaTerminacionTemprana))) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal(nameof(Contrato.fechaTerminacionTemprana))),
                                 usuarioCreacion = reader.IsDBNull(reader.GetOrdinal(nameof(Contrato.usuarioCreacion))) ? null : reader.GetString(nameof(Contrato.usuarioCreacion)),
-                                usuarioTerminacion = reader.IsDBNull(reader.GetOrdinal(nameof(Contrato.usuarioTerminacion))) ? null : reader.GetString(nameof(Contrato.usuarioTerminacion)),
+                                usuarioEliminacion = reader.IsDBNull(reader.GetOrdinal(nameof(Contrato.usuarioEliminacion))) ? null : reader.GetString(nameof(Contrato.usuarioEliminacion)),
                                 estado = reader.GetBoolean(reader.GetOrdinal(nameof(Contrato.estado))),
                                 porcentajeMulta = reader.IsDBNull(reader.GetOrdinal(nameof(Contrato.porcentajeMulta))) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal(nameof(Contrato.porcentajeMulta))),
                                 InmuebleDireccion = reader.GetString(nameof(Contrato.InmuebleDireccion)),
@@ -171,10 +171,10 @@ namespace inmobiliaria_santi.Models
             {
                 var sql = @"INSERT INTO contrato 
                             (idInquilino, idInmueble, fechaInicio, fechaFin, montoRenta, deposito, comision, 
-                             condiciones, multaTerminacionTemprana, fechaTerminacionTemprana, usuarioCreacion, usuarioTerminacion, estado, porcentajeMulta)
+                             condiciones, multaTerminacionTemprana, fechaTerminacionTemprana, usuarioCreacion, usuarioEliminacion, estado, porcentajeMulta)
                             VALUES 
                             (@idInquilino, @idInmueble, @fechaInicio, @fechaFin, @montoRenta, @deposito, @comision, 
-                             @condiciones, @multaTerminacionTemprana, @fechaTerminacionTemprana, @usuarioCreacion, @usuarioTerminacion, @estado, @porcentajeMulta)";
+                             @condiciones, @multaTerminacionTemprana, @fechaTerminacionTemprana, @usuarioCreacion, @usuarioEliminacion, @estado, @porcentajeMulta)";
 
                 try
                 {
@@ -191,7 +191,7 @@ namespace inmobiliaria_santi.Models
                         comando.Parameters.AddWithValue("@multaTerminacionTemprana", contrato.multaTerminacionTemprana ?? (object)DBNull.Value);
                         comando.Parameters.AddWithValue("@fechaTerminacionTemprana", contrato.fechaTerminacionTemprana ?? (object)DBNull.Value);
                         comando.Parameters.AddWithValue("@usuarioCreacion", string.IsNullOrEmpty(contrato.usuarioCreacion) ? (object)DBNull.Value : contrato.usuarioCreacion);
-                        comando.Parameters.AddWithValue("@usuarioTerminacion", string.IsNullOrEmpty(contrato.usuarioTerminacion) ? (object)DBNull.Value : contrato.usuarioTerminacion);
+                        comando.Parameters.AddWithValue("@usuarioEliminacion", string.IsNullOrEmpty(contrato.usuarioEliminacion) ? (object)DBNull.Value : contrato.usuarioEliminacion);
                         comando.Parameters.AddWithValue("@estado", contrato.estado ? 1 : 0); // Asumiendo que estado es bool, 1 para true y 0 para false
                         comando.Parameters.AddWithValue("@porcentajeMulta", contrato.porcentajeMulta ?? (object)DBNull.Value);
 
@@ -223,7 +223,7 @@ namespace inmobiliaria_santi.Models
                                 multaTerminacionTemprana = @multaTerminacionTemprana, 
                                 fechaTerminacionTemprana = @fechaTerminacionTemprana, 
                                 usuarioCreacion = @usuarioCreacion, 
-                                usuarioTerminacion = @usuarioTerminacion, 
+                                usuarioEliminacion = @usuarioEliminacion, 
                                 estado = @estado, 
                                 porcentajeMulta = @porcentajeMulta
                             WHERE idContrato = @idContrato";
@@ -244,7 +244,7 @@ namespace inmobiliaria_santi.Models
                         comando.Parameters.AddWithValue("@multaTerminacionTemprana", contrato.multaTerminacionTemprana ?? (object)DBNull.Value);
                         comando.Parameters.AddWithValue("@fechaTerminacionTemprana", contrato.fechaTerminacionTemprana ?? (object)DBNull.Value);
                         comando.Parameters.AddWithValue("@usuarioCreacion", contrato.usuarioCreacion ?? (object)DBNull.Value);
-                        comando.Parameters.AddWithValue("@usuarioTerminacion", contrato.usuarioTerminacion ?? (object)DBNull.Value);
+                        comando.Parameters.AddWithValue("@usuarioEliminacion", contrato.usuarioEliminacion ?? (object)DBNull.Value);
                         comando.Parameters.AddWithValue("@estado", contrato.estado ? 1 : 0);
                         comando.Parameters.AddWithValue("@porcentajeMulta", contrato.porcentajeMulta ?? (object)DBNull.Value);
         
@@ -280,5 +280,33 @@ namespace inmobiliaria_santi.Models
                 }
             }
         }
+
+        public List<Contrato> ObtenerContratosConResumen()
+        {
+            var contratos = new List<Contrato>();
+            using (var conexion = new MySqlConnection(connectionString))
+            {
+                var sql = @"SELECT c.idContrato, CONCAT(i.direccion, ' - ', inq.nombre, ' ', inq.apellido) AS ContratoResumen
+                            FROM contrato c
+                            INNER JOIN inmueble i ON c.idInmueble = i.idInmueble
+                            INNER JOIN inquilino inq ON c.idInquilino = inq.idInquilino
+                            WHERE c.estado = 1";
+                using (var comando = new MySqlCommand(sql, conexion))
+                {
+                    conexion.Open();
+                    var reader = comando.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        contratos.Add(new Contrato
+                        {
+                            idContrato = reader.GetInt32("idContrato"),
+                            ContratoResumen = reader["ContratoResumen"].ToString()
+                        });
+                    }
+                }
+            }
+            return contratos;
+        }
+
     }
 }

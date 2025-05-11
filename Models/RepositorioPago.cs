@@ -13,9 +13,14 @@ public class RepositorioPago
             var sql = $@"SELECT p.{nameof(Pago.idPago)}, p.{nameof(Pago.idContrato)}, p.{nameof(Pago.nroPago)},
                                 p.{nameof(Pago.fechaPago)}, p.{nameof(Pago.detalle)}, p.{nameof(Pago.importe)},
                                 p.{nameof(Pago.estado)}, p.{nameof(Pago.usuarioCreacion)},
-                                p.{nameof(Pago.usuarioAnulacion)}, p.{nameof(Pago.usuarioEliminacion)}
-                         FROM pago p
-                         WHERE p.{nameof(Pago.estado)} = 1";
+                                p.{nameof(Pago.usuarioAnulacion)}, p.{nameof(Pago.usuarioEliminacion)},
+                                CONCAT(i.direccion, ' - ', inq.nombre, ' ', inq.apellido) AS ContratoResumen
+                        FROM pago p
+                        INNER JOIN contrato c ON p.idContrato = c.idContrato
+                        INNER JOIN inmueble i ON c.idInmueble = i.idInmueble
+                        INNER JOIN inquilino inq ON c.idInquilino = inq.idInquilino
+                        WHERE p.{nameof(Pago.estado)} = 1
+                        ORDER BY p.fechaPago DESC;"; 
             using (var comando = new MySqlCommand(sql, conexion))
             {
                 conexion.Open();
@@ -34,6 +39,7 @@ public class RepositorioPago
                         usuarioCreacion = reader[nameof(Pago.usuarioCreacion)].ToString(),
                         usuarioAnulacion = reader[nameof(Pago.usuarioAnulacion)].ToString(),
                         usuarioEliminacion = reader[nameof(Pago.usuarioEliminacion)].ToString(),
+                        ContratoResumen = reader["ContratoResumen"].ToString()
                     });
                 }
             }
@@ -46,12 +52,16 @@ public class RepositorioPago
         Pago? pago = null;
         using (var conexion = new MySqlConnection(connectionString))
         {
-            var sql = $@"SELECT {nameof(Pago.idPago)}, {nameof(Pago.idContrato)}, {nameof(Pago.nroPago)},
-                                {nameof(Pago.fechaPago)}, {nameof(Pago.detalle)}, {nameof(Pago.importe)},
-                                {nameof(Pago.estado)}, {nameof(Pago.usuarioCreacion)},
-                                {nameof(Pago.usuarioAnulacion)}, {nameof(Pago.usuarioEliminacion)}
-                         FROM pago
-                         WHERE {nameof(Pago.idPago)} = @{nameof(idPago)}";
+            var sql = $@"SELECT p.{nameof(Pago.idPago)}, p.{nameof(Pago.idContrato)}, p.{nameof(Pago.nroPago)},
+                                p.{nameof(Pago.fechaPago)}, p.{nameof(Pago.detalle)}, p.{nameof(Pago.importe)},
+                                p.{nameof(Pago.estado)}, p.{nameof(Pago.usuarioCreacion)},
+                                p.{nameof(Pago.usuarioAnulacion)}, p.{nameof(Pago.usuarioEliminacion)},
+                                CONCAT(i.direccion, ' - ', inq.nombre, ' ', inq.apellido) AS contratoResumen
+                        FROM pago p
+                        INNER JOIN contrato c ON p.idContrato = c.idContrato
+                        INNER JOIN inmueble i ON c.idInmueble = i.idInmueble
+                        INNER JOIN inquilino inq ON c.idInquilino = inq.idInquilino
+                        WHERE p.{nameof(Pago.idPago)} = @{nameof(idPago)}";
             using (var comando = new MySqlCommand(sql, conexion))
             {
                 comando.Parameters.AddWithValue($"@{nameof(idPago)}", idPago);
@@ -71,6 +81,7 @@ public class RepositorioPago
                         usuarioCreacion = reader[nameof(Pago.usuarioCreacion)].ToString(),
                         usuarioAnulacion = reader[nameof(Pago.usuarioAnulacion)].ToString(),
                         usuarioEliminacion = reader[nameof(Pago.usuarioEliminacion)].ToString(),
+                        ContratoResumen = reader["contratoResumen"].ToString()
                     };
                 }
             }

@@ -27,20 +27,20 @@
             foreach (var item in Model)
             {
                 <tr>
-                    <td>@item.idContrato</td>
+                    <td>@item.ContratoResumen</td> <!-- ✅ cambio aplicado -->
                     <td>@item.fechaPago.ToShortDateString()</td>
                     <td>@item.importe.ToString("C")</td>
                     <td>@item.nroPago</td>
                     <td>@item.detalle</td>
                     <td>
                         <a asp-action="Detalle" asp-route-id="@item.idPago" class="btn btn-info btn-sm">
-                            <i class="bi bi-eye"></i>👁️ Detalle
+                            👁️ Detalle
                         </a>
                         <a asp-action="Editar" asp-route-id="@item.idPago" class="btn btn-warning btn-sm">
-                            <i class="bi bi-pencil"></i>✏️ Editar
+                            ✏️ Editar
                         </a>
                         <a asp-action="Eliminar" asp-route-id="@item.idPago" class="btn btn-danger btn-sm">
-                            <i class="bi bi-trash"></i>🗑️ Eliminar
+                            🗑️ Eliminar
                         </a>
                     </td>
                 </tr>
@@ -50,7 +50,7 @@
         else
         {
             <tr>
-                <td colspan="7">No hay pagos registrados.</td>
+                <td colspan="6">No hay pagos registrados.</td> <!-- corregido colspan -->
             </tr>
         }
     </tbody>

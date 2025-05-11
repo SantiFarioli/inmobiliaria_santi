@@ -33,11 +33,11 @@ public class Contrato
     public string? condiciones { get; set; }
 
     public string? usuarioCreacion { get; set; }
-    public string? usuarioTerminacion { get; set; }
+    public string? usuarioEliminacion { get; set; }
 
     public decimal? multaTerminacionTemprana { get; set; }
     public DateTime? fechaTerminacionTemprana { get; set; }
-    public bool estado { get; set; }
+    public bool estado { get; set; } = true;
     public decimal? porcentajeMulta { get; set; }
 
     // propiedades para mostrar datos
@@ -46,4 +46,5 @@ public class Contrato
     public string? InmuebleDireccion { get; set; }
     public string? InquilinoNombre { get; set; }
     public string? InquilinoApellido { get; set; }
+    public string? ContratoResumen { get; set; }
 }

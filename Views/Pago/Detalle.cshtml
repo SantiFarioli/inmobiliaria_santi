@@ -1,29 +1,26 @@
 @model inmobiliaria_santi.Models.Pago
+
 @{
     ViewData["Title"] = "Detalle de Pago";
 }
 
-<h2 class="text-center my-4">Detalle de Pago</h2>
+<h2 class="text-center mt-4 mb-4">Detalle del Pago</h2>
 
 <div class="card mx-auto shadow" style="max-width: 500px;">
     <div class="card-body">
-        <p><strong>ID Pago:</strong> @Model.idPago</p>
-        <p><strong>Contrato:</strong> @Model.idContrato</p>
-        <p><strong>Número de Pago:</strong> @Model.nroPago</p>
-        <p><strong>Fecha:</strong> @Model.fechaPago.ToShortDateString()</p>
+        <h5 class="card-title">Pago Nº @Model.nroPago</h5>
+        
+        <p><strong>Contrato:</strong> @Model.ContratoResumen</p>
+        <p><strong>Fecha de Pago:</strong> @Model.fechaPago.ToString("dd/MM/yyyy")</p>
         <p><strong>Importe:</strong> @Model.importe.ToString("C")</p>
         <p><strong>Detalle:</strong> @Model.detalle</p>
-        <p><strong>Creado por:</strong> @Model.usuarioCreacion</p>
-        @if (!string.IsNullOrEmpty(Model.usuarioAnulacion))
-        {
-            <p><strong>Anulado por:</strong> @Model.usuarioAnulacion</p>
-        }
+        <p><strong>Registrado por:</strong> @Model.usuarioCreacion</p>
+
         @if (!string.IsNullOrEmpty(Model.usuarioEliminacion))
         {
             <p><strong>Eliminado por:</strong> @Model.usuarioEliminacion</p>
         }
-        <div class="text-center mt-4">
-            <a asp-action="Index" class="btn btn-secondary">Volver</a>
-        </div>
+
+        <a asp-action="Index" class="btn btn-secondary mt-3">Volver al listado</a>
     </div>
 </div>

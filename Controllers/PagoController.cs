@@ -7,23 +7,25 @@ namespace inmobiliaria_santi.Controllers
     [Authorize]
     public class PagoController : Controller
     {
-        private readonly RepositorioPago _repo;
+        private readonly RepositorioPago _repositorio;
 
-        public PagoController()
+        public PagoController(RepositorioPago repositorio)
         {
-            _repo = new RepositorioPago();
+            _repositorio = repositorio;
         }
-
+       
         // GET: Pago
         public IActionResult Index()
         {
-            var pagos = _repo.ObtenerTodos();
+            var pagos = _repositorio.ObtenerTodos();
             return View(pagos);
         }
 
         // GET: Pago/Crear
         public IActionResult Crear()
         {
+            var repoContrato = new RepositorioContrato();
+	        ViewBag.Contratos = repoContrato.ObtenerContratosConResumen();
             return View();
         }
 
@@ -37,7 +39,7 @@ namespace inmobiliaria_santi.Controllers
                 if (ModelState.IsValid)
                 {
                     pago.usuarioCreacion = User.Identity?.Name ?? "sistema";
-                    _repo.CrearPago(pago);
+                    _repositorio.CrearPago(pago);
                     TempData["Mensaje"] = "Pago registrado correctamente.";
                     TempData["Tipo"] = "success";
                     return RedirectToAction(nameof(Index));
@@ -56,7 +58,7 @@ namespace inmobiliaria_santi.Controllers
         // GET: Pago/Editar/5
         public IActionResult Editar(int id)
         {
-            var pago = _repo.ObtenerPorId(id);
+            var pago = _repositorio.ObtenerPorId(id);
             if (pago == null)
                 return NotFound();
             return View(pago);
@@ -71,7 +73,7 @@ namespace inmobiliaria_santi.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    _repo.ActualizarPago(pago);
+                    _repositorio.ActualizarPago(pago);
                     TempData["Mensaje"] = "Pago modificado correctamente.";
                     TempData["Tipo"] = "success";
                     return RedirectToAction(nameof(Index));
@@ -90,7 +92,7 @@ namespace inmobiliaria_santi.Controllers
         // GET: Pago/Detalle/5
         public IActionResult Detalle(int id)
         {
-            var pago = _repo.ObtenerPorId(id);
+            var pago = _repositorio.ObtenerPorId(id);
             if (pago == null)
                 return NotFound();
             return View(pago);
@@ -102,7 +104,7 @@ namespace inmobiliaria_santi.Controllers
             try
             {
                 var usuario = User.Identity?.Name ?? "sistema";
-                _repo.EliminarPago(id, usuario);
+                _repositorio.EliminarPago(id, usuario);
                 TempData["Mensaje"] = "Pago eliminado correctamente.";
                 TempData["Tipo"] = "success";
             }
