@@ -23,17 +23,17 @@ public class Contrato
 
     [Required]
     [DataType(DataType.Currency)]
-    public decimal montoRenta { get; set; }
+    public decimal? montoRenta { get; set; }
 
     [DataType(DataType.Currency)]
-    public decimal deposito { get; set; }
+    public decimal? deposito { get; set; }
 
     [DataType(DataType.Currency)]
-    public decimal comision { get; set; }
+    public decimal? comision { get; set; }
     public string? condiciones { get; set; }
 
     public string? usuarioCreacion { get; set; }
-    public string? usuarioEliminacion { get; set; }
+    public string? usuarioRescision { get; set; }
 
     public decimal? multaTerminacionTemprana { get; set; }
     public DateTime? fechaTerminacionTemprana { get; set; }

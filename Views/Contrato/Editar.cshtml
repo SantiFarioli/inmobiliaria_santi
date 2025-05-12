@@ -1,6 +1,8 @@
 @model inmobiliaria_santi.Models.Contrato
 
 <form asp-action="Editar">
+    @Html.HiddenFor(m => m.idContrato)
+    
     <div class="form-group">
         <label for="idInmueble">Inmueble</label>
         <select class="form-control" asp-for="idInmueble" asp-items="ViewBag.Inmuebles"></select>
@@ -45,7 +47,7 @@
     @Html.HiddenFor(m => m.multaTerminacionTemprana)
     @Html.HiddenFor(m => m.fechaTerminacionTemprana)
     @Html.HiddenFor(m => m.porcentajeMulta)
-    @Html.HiddenFor(m => m.usuarioEliminacion)
+    @Html.HiddenFor(m => m.usuarioRescision)
     @Html.HiddenFor(m => m.usuarioCreacion)
     @Html.HiddenFor(m => m.estado)
 

@@ -46,12 +46,17 @@ namespace inmobiliaria_santi.Models
             Inmueble? inmueble = null;
             using (var conexion = new MySqlConnection(connectionString))
             {
-                var sql = $@"SELECT {nameof(Inmueble.idInmueble)}, {nameof(Inmueble.idPropietario)}, {nameof(Inmueble.idTipoInmueble)},
-                                    {nameof(Inmueble.direccion)}, {nameof(Inmueble.uso)}, {nameof(Inmueble.cantAmbiente)}, 
-                                    {nameof(Inmueble.valor)}, {nameof(Inmueble.disponible)}, {nameof(Inmueble.estado)}
-                             FROM inmueble
-                             WHERE {nameof(Inmueble.idInmueble)} = @{nameof(idInmueble)} 
-                             AND {nameof(Inmueble.estado)} = 1";
+                var sql = $@"
+                    SELECT i.{nameof(Inmueble.idInmueble)}, i.{nameof(Inmueble.idPropietario)}, i.{nameof(Inmueble.idTipoInmueble)},
+                        i.{nameof(Inmueble.direccion)}, i.{nameof(Inmueble.uso)}, i.{nameof(Inmueble.cantAmbiente)},
+                        i.{nameof(Inmueble.valor)}, i.{nameof(Inmueble.disponible)}, i.{nameof(Inmueble.estado)},
+                        p.nombre AS PropietarioNombre, p.apellido AS PropietarioApellido, p.dni AS PropietarioDni,
+                        ti.nombre AS TipoNombre
+                    FROM inmueble i
+                    INNER JOIN propietario p ON i.idPropietario = p.idPropietario
+                    INNER JOIN tipoinmueble ti ON i.idTipoInmueble = ti.idTipoInmueble
+                    WHERE i.{nameof(Inmueble.idInmueble)} = @{nameof(idInmueble)} AND i.{nameof(Inmueble.estado)} = 1";
+
                 using (var comando = new MySqlCommand(sql, conexion))
                 {
                     comando.Parameters.AddWithValue($"@{nameof(idInmueble)}", idInmueble);
@@ -64,12 +69,16 @@ namespace inmobiliaria_santi.Models
                             idInmueble = reader.GetInt32(nameof(Inmueble.idInmueble)),
                             idPropietario = reader.GetInt32(nameof(Inmueble.idPropietario)),
                             idTipoInmueble = reader.GetInt32(nameof(Inmueble.idTipoInmueble)),
-                            direccion = reader.GetString(nameof(Inmueble.direccion)),
-                            uso = reader.GetString(nameof(Inmueble.uso)),
+                            direccion = reader[nameof(Inmueble.direccion)].ToString(),
+                            uso = reader[nameof(Inmueble.uso)].ToString(),
                             cantAmbiente = reader.GetInt32(nameof(Inmueble.cantAmbiente)),
                             valor = reader.GetDecimal(nameof(Inmueble.valor)),
                             disponible = reader.GetBoolean(nameof(Inmueble.disponible)),
-                            estado = reader.GetBoolean(nameof(Inmueble.estado))
+                            estado = reader.GetBoolean(nameof(Inmueble.estado)),
+                            PropietarioNombre = reader["PropietarioNombre"].ToString(),
+                            PropietarioApellido = reader["PropietarioApellido"].ToString(),
+                            PropietarioDni = reader["PropietarioDni"].ToString(),
+                            TipoNombre = reader["TipoNombre"].ToString()
                         };
                     }
                 }

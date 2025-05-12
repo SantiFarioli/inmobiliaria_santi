@@ -35,7 +35,7 @@
                 <td>@item.PropietarioNombre @item.PropietarioApellido</td> <!-- Nombre completo del propietario -->
                 <td>@item.fechaInicio.ToString("dd/MM/yyyy")</td>
                 <td>@item.fechaFin.ToString("dd/MM/yyyy")</td>
-                <td>@item.montoRenta.ToString("C")</td> <!-- Mostrar en formato de moneda -->
+                <td>@String.Format("{0:C}", item.montoRenta)</td> <!-- Mostrar en formato de moneda -->
                 <td>
                     @if (item.estado == false)  
                     {

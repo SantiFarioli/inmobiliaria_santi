@@ -49,7 +49,7 @@ namespace inmobiliaria_santi.Controllers
                 }), 
                 "idInmueble", "Direccion");
 
-            return View();
+            return View( new Contrato{ estado = true } ); 
         }
 
         // POST: Contrato/Crear
@@ -61,6 +61,8 @@ namespace inmobiliaria_santi.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    contrato.estado = true;
+                    contrato.usuarioCreacion = User.Identity?.Name ?? "sistema";
                     _repositorioContrato.CrearContrato(contrato);
                     TempData["Mensaje"] = "Contrato creado correctamente";
                     TempData["Tipo"] = "success";
@@ -218,7 +220,7 @@ namespace inmobiliaria_santi.Controllers
 
             // Calcular el porcentaje de multa según el tiempo restante
             decimal porcentajeMulta = mesesRestantes < 6 ? 0.10m : 0.15m;
-            decimal multa = contrato.montoRenta * porcentajeMulta;
+            decimal multa = (contrato.montoRenta ?? 0) * porcentajeMulta;
 
             // Preparar el contrato para ser actualizado
             contrato.multaTerminacionTemprana = multa;
@@ -249,6 +251,7 @@ namespace inmobiliaria_santi.Controllers
                     contratoExistente.fechaTerminacionTemprana = DateTime.Now; // Fecha de rescisión
                     contratoExistente.multaTerminacionTemprana = contrato.multaTerminacionTemprana; // Multa calculada
                     contratoExistente.porcentajeMulta = contrato.porcentajeMulta; // Porcentaje de multa calculado
+                    contratoExistente.usuarioRescision = User.Identity?.Name ?? "sistema";
                     
                     _repositorioContrato.ActualizarContrato(contratoExistente);
 

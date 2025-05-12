@@ -1,23 +1,34 @@
 @model inmobiliaria_santi.Models.Contrato
 
-<h2>Rescindir Contrato</h2>
+<h2 class="text-center my-4">Rescindir Contrato</h2>
 
-<form asp-action="RescindirContrato">
+<form asp-action="RescindirContrato" method="post">
+    @Html.AntiForgeryToken()
     <input type="hidden" asp-for="idContrato" />
-    
+    <input type="hidden" asp-for="idInmueble" />
+    <input type="hidden" asp-for="idInquilino" />
+    <input type="hidden" asp-for="fechaInicio" />
+    <input type="hidden" asp-for="fechaFin" />
+    <input type="hidden" asp-for="montoRenta" />
+    <input type="hidden" asp-for="deposito" />
+    <input type="hidden" asp-for="comision" />
+    <input type="hidden" asp-for="condiciones" />
+    <input type="hidden" asp-for="usuarioCreacion" />
+    <input type="hidden" asp-for="estado" />
+
     <div class="form-group">
-        <label for="multaTerminacionTemprana">Multa por Terminación Temprana</label>
-        <input type="number" class="form-control" asp-for="multaTerminacionTemprana" readonly />
+        <label asp-for="multaTerminacionTemprana">Multa por Terminación Temprana</label>
+        <input asp-for="multaTerminacionTemprana" class="form-control" readonly />
     </div>
 
     <div class="form-group">
-        <label for="fechaTerminacionTemprana">Fecha de Terminación Temprana</label>
-        <input type="date" class="form-control" asp-for="fechaTerminacionTemprana" readonly />
+        <label asp-for="fechaTerminacionTemprana">Fecha de Terminación</label>
+        <input asp-for="fechaTerminacionTemprana" class="form-control" readonly />
     </div>
 
     <div class="form-group">
-        <label for="porcentajeMulta">Porcentaje de Multa</label>
-        <input type="number" class="form-control" asp-for="porcentajeMulta" readonly />
+        <label asp-for="porcentajeMulta">Porcentaje de Multa</label>
+        <input asp-for="porcentajeMulta" class="form-control" readonly />
     </div>
 
     <button type="submit" class="btn btn-danger">Confirmar Rescisión</button>

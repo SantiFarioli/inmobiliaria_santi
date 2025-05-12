@@ -1,0 +1,52 @@
+@model inmobiliaria_santi.Models.Inmueble
+
+@{
+    ViewData["Title"] = "Detalle de Inmueble";
+}
+
+<h2 class="text-center my-4">Detalle de Inmueble</h2>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow p-4">
+            <dl class="row">
+                <dt class="col-sm-4">Dirección</dt>
+                <dd class="col-sm-8">@Model.direccion</dd>
+
+                <dt class="col-sm-4">Tipo de Inmueble</dt>
+                <dd class="col-sm-8">@Model.TipoNombre</dd>
+
+                <dt class="col-sm-4">Uso</dt>
+                <dd class="col-sm-8">@Model.uso</dd>
+
+                <dt class="col-sm-4">Cantidad de Ambientes</dt>
+                <dd class="col-sm-8">@Model.cantAmbiente</dd>
+
+                <dt class="col-sm-4">Valor</dt>
+                <dd class="col-sm-8">@Model.valor.ToString("C")</dd>
+
+                <dt class="col-sm-4">¿Disponible?</dt>
+                <dd class="col-sm-8">
+                    @if (Model.disponible)
+                    {
+                        <span class="badge bg-success">Sí</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">No</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-4">Propietario</dt>
+                <dd class="col-sm-8">@Model.PropietarioNombre @Model.PropietarioApellido</dd>
+
+                <dt class="col-sm-4">DNI del Propietario</dt>
+                <dd class="col-sm-8">@Model.PropietarioDni</dd>
+            </dl>
+
+            <div class="text-center mt-4">
+                <a asp-action="Index" class="btn btn-primary">Volver al listado</a>
+            </div>
+        </div>
+    </div>
+</div>
