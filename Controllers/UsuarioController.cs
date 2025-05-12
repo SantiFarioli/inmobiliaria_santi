@@ -9,11 +9,11 @@ namespace inmobiliaria_santi.Controllers
 {
     public class UsuarioController : Controller
     {
-        private readonly RepositorioUsuario _repo;
+        private readonly RepositorioUsuario _repositorio;
 
-        public UsuarioController()
+        public UsuarioController(RepositorioUsuario repositorio)
         {
-            _repo = new RepositorioUsuario();
+            _repositorio = repositorio;
         }
 
         [AllowAnonymous]
@@ -26,7 +26,7 @@ namespace inmobiliaria_santi.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login(string email, string contrasena)
         {
-            var usuario = _repo.ValidarUsuario(email, contrasena);
+            var usuario = _repositorio.ValidarUsuario(email, contrasena);
 
             if (usuario == null)
             {
@@ -67,8 +67,16 @@ namespace inmobiliaria_santi.Controllers
             {
                 return RedirectToAction("Login", "Usuarios");
             }
-            var usuario = _repo.ObtenerPorEmail(email);
+            var usuario = _repositorio.ObtenerPorEmail(email);
             return View(usuario);
+        }
+
+
+        [Authorize(Roles = "Administrador")]
+        public IActionResult Index()
+        {
+            var usuarios = _repositorio.ObtenerTodos();
+            return View(usuarios);
         }
         
         [Authorize(Roles = "Administrador")]
@@ -102,7 +110,7 @@ namespace inmobiliaria_santi.Controllers
                 }
 
                 u.contrasena = HashHelper.CalcularHash(u.contrasena ?? "");
-                _repo.Alta(u);
+                _repositorio.Alta(u);
 
                 TempData["Mensaje"] = "Usuario creado correctamente";
                 TempData["Tipo"] = "success";
@@ -116,5 +124,104 @@ namespace inmobiliaria_santi.Controllers
             }
         }
 
+        [HttpPost]
+        [Authorize(Roles = "Administrador")]
+        public IActionResult Editar(Usuario u)
+        {
+            try
+            {
+                if (u.AvatarFile != null && u.AvatarFile.Length > 0)
+                {
+                    var nombreArchivo = $"avatar_{Guid.NewGuid():N}" + Path.GetExtension(u.AvatarFile.FileName);
+                    var ruta = Path.Combine("wwwroot/img/avatares", nombreArchivo);
+                    using (var stream = new FileStream(ruta, FileMode.Create))
+                    {
+                        u.AvatarFile.CopyTo(stream);
+                    }
+                    u.avatar = "/img/avatares/" + nombreArchivo;
+                }
+
+                _repositorio.ActualizarUsuarioAdmin(u);
+                TempData["Mensaje"] = "Usuario actualizado correctamente";
+                TempData["Tipo"] = "success";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["Mensaje"] = "Error al actualizar usuario: " + ex.Message;
+                TempData["Tipo"] = "error";
+                return View(u);
+            }
+        }
+
+
+        [Authorize(Roles = "Empleado,Administrador")]
+        public IActionResult EditarPerfil()
+        {
+            var email = User.Identity?.Name ?? "";
+            var usuario = _repositorio.ObtenerPorEmail(email);
+            return View(usuario);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Empleado,Administrador")]
+        public IActionResult EditarPerfil(Usuario u, string nuevaContrasena)
+        {
+            try
+            {
+                var email = User.Identity?.Name ?? "";
+                var original = _repositorio.ObtenerPorEmail(email);
+
+                if (original != null)
+                {
+                    original.nombre = u.nombre;
+                    original.apellido = u.apellido;
+                    original.email = u.email;
+                }
+                else
+                {
+                    TempData["Mensaje"] = "Error: Usuario no encontrado.";
+                    TempData["Tipo"] = "error";
+                    return View(u);
+                }
+
+                if (!string.IsNullOrEmpty(nuevaContrasena))
+                {
+                    original.contrasena = HashHelper.CalcularHash(nuevaContrasena);
+                }
+
+                if (u.AvatarFile != null && u.AvatarFile.Length > 0)
+                {
+                    var nombreArchivo = $"avatar_{Guid.NewGuid():N}" + Path.GetExtension(u.AvatarFile.FileName);
+                    var ruta = Path.Combine("wwwroot/img/avatares", nombreArchivo);
+                    using (var stream = new FileStream(ruta, FileMode.Create))
+                    {
+                        u.AvatarFile.CopyTo(stream);
+                    }
+                    original.avatar = "/img/avatares/" + nombreArchivo;
+                }
+
+                _repositorio.ActualizarUsuarioEmpleado(original);
+                TempData["Mensaje"] = "Perfil actualizado con éxito";
+                TempData["Tipo"] = "success";
+                return RedirectToAction("Perfil");
+            }
+            catch (Exception ex)
+            {
+                TempData["Mensaje"] = "Error al actualizar perfil: " + ex.Message;
+                TempData["Tipo"] = "error";
+                return View(u);
+            }
+        }
+
+
+        [Authorize(Roles = "Administrador")]
+        public IActionResult EliminarConfirmado(int id)
+        {
+            _repositorio.EliminarUsuario(id);
+            TempData["Mensaje"] = "Usuario eliminado correctamente";
+            TempData["Tipo"] = "success";
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

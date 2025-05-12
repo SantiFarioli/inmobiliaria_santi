@@ -1,0 +1,69 @@
+@model IEnumerable<inmobiliaria_santi.Models.Usuario>
+@{
+    ViewData["Title"] = "Listado de Usuarios";
+}
+
+<h2 class="text-center my-4">Listado de Usuarios</h2>
+
+<table class="table table-bordered table-hover">
+    <thead class="table-primary">
+        <tr>
+            <th>Id</th>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Avatar</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var usuario in Model)
+        {
+            <tr>
+                <td>@usuario.idUsuario</td>
+                <td>@usuario.nombre @usuario.apellido</td>
+                <td>@usuario.email</td>
+                <td>@(usuario.rol == 1 ? "Administrador" : "Empleado")</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(usuario.avatar))
+                    {
+                        <img src="@Url.Content(usuario.avatar)" width="50" height="50" class="rounded-circle" />
+                    }
+                    else
+                    {
+                        <span>Sin avatar</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Perfil" asp-route-id="@usuario.idUsuario" class="btn btn-info btn-sm">👁️ Perfil</a>
+                    <a asp-action="Editar" asp-route-id="@usuario.idUsuario" class="btn btn-warning btn-sm">✏️ Editar</a>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmarEliminacion(@usuario.idUsuario)">🗑️ Eliminar</button>
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function confirmarEliminacion(id) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: 'Esta acción eliminará al usuario.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/Usuario/EliminarConfirmado/' + id;
+                }
+            });
+        }
+    </script>
+}
+

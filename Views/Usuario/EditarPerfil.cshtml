@@ -1,0 +1,54 @@
+@model inmobiliaria_santi.Models.Usuario
+@{
+    ViewData["Title"] = "Editar Perfil";
+}
+
+<h2 class="text-center my-4">Editar Perfil</h2>
+
+<form asp-action="EditarPerfil" enctype="multipart/form-data" method="post" class="card shadow mx-auto p-4" style="max-width: 600px;">
+    @Html.HiddenFor(m => m.idUsuario)
+
+    <div class="form-group mb-3">
+        <label asp-for="nombre" class="form-label">Nombre</label>
+        <input asp-for="nombre" class="form-control" />
+        <span asp-validation-for="nombre" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="apellido" class="form-label">Apellido</label>
+        <input asp-for="apellido" class="form-control" />
+        <span asp-validation-for="apellido" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="email" class="form-label">Email</label>
+        <input asp-for="email" class="form-control" />
+        <span asp-validation-for="email" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="nuevaContrasena">Nueva Contraseña</label>
+        <input type="password" name="nuevaContrasena" class="form-control" placeholder="Dejar en blanco si no se cambia" />
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="AvatarFile" class="form-label">Cambiar Avatar</label>
+        <input type="file" name="AvatarFile" class="form-control" />
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.avatar))
+    {
+        <div class="text-center mb-3">
+            <img src="@Model.avatar" alt="Avatar actual" class="img-thumbnail" style="max-height: 150px;" />
+        </div>
+    }
+
+    <div class="text-center">
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        <a asp-action="Perfil" class="btn btn-secondary ms-2">Cancelar</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,44 @@
+@model inmobiliaria_santi.Models.Usuario
+@{
+    ViewData["Title"] = "Editar Usuario";
+}
+
+<h2 class="text-center my-4">Editar Usuario</h2>
+
+<form asp-action="Editar" method="post" enctype="multipart/form-data" class="mx-auto" style="max-width: 600px;">
+    <input type="hidden" asp-for="idUsuario" />
+
+    <div class="form-group">
+        <label asp-for="nombre"></label>
+        <input asp-for="nombre" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="apellido"></label>
+        <input asp-for="apellido" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="email"></label>
+        <input asp-for="email" type="email" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Avatar</label><br />
+        @if (!string.IsNullOrEmpty(Model.avatar))
+        {
+            <img src="@Url.Content(Model.avatar)" alt="Avatar" width="100" height="100" class="rounded-circle mb-2" />
+        }
+        <input type="file" name="AvatarFile" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="rol">Rol</label>
+        <select asp-for="rol" class="form-control">
+            <option value="1">Administrador</option>
+            <option value="2">Empleado</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-success mt-3">Guardar Cambios</button>
+</form>
