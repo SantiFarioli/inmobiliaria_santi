@@ -32,7 +32,6 @@
         <dt class="col-sm-4">Comisión</dt>
         <dd class="col-sm-8">@((Model.comision.HasValue ? ((IFormattable)Model.comision.Value).ToString("C", System.Globalization.CultureInfo.CurrentCulture) : "N/A"))</dd>
 
-
         <dt class="col-sm-4">Condiciones</dt>
         <dd class="col-sm-8">@Model.condiciones</dd>
 
@@ -57,7 +56,7 @@
             <dd class="col-sm-8">@Model.fechaTerminacionTemprana?.ToString("dd/MM/yyyy")</dd>
 
             <dt class="col-sm-4">Multa por Rescisión</dt>
-            <dd class="col-sm-8">@Model.multaTerminacionTemprana?.ToString("C")</dd>
+            <dd class="col-sm-8">@((Model.multaTerminacionTemprana.HasValue ? ((IFormattable)Model.multaTerminacionTemprana.Value).ToString("C", System.Globalization.CultureInfo.CurrentCulture) : "N/A"))</dd>
 
             <dt class="col-sm-4">Porcentaje Multa</dt>
             <dd class="col-sm-8">
