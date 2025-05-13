@@ -63,14 +63,13 @@ namespace inmobiliaria_santi.Controllers
         public IActionResult Perfil()
         {
             var email = User.Identity?.Name ?? "";
-            if(string.IsNullOrEmpty(email))
+            if (string.IsNullOrEmpty(email))
             {
-                return RedirectToAction("Login", "Usuarios");
+                return RedirectToAction("Login", "Usuario");
             }
             var usuario = _repositorio.ObtenerPorEmail(email);
             return View(usuario);
         }
-
 
         [Authorize(Roles = "Administrador")]
         public IActionResult Index()
@@ -78,7 +77,7 @@ namespace inmobiliaria_santi.Controllers
             var usuarios = _repositorio.ObtenerTodos();
             return View(usuarios);
         }
-        
+
         [Authorize(Roles = "Administrador")]
         public IActionResult Alta()
         {
@@ -105,7 +104,6 @@ namespace inmobiliaria_santi.Controllers
                         u.AvatarFile.CopyTo(stream);
                     }
 
-                    // Guardamos la ruta relativa
                     u.avatar = "/img/avatares/" + nombreArchivo;
                 }
 
@@ -122,6 +120,19 @@ namespace inmobiliaria_santi.Controllers
                 TempData["Tipo"] = "error";
                 return View(u);
             }
+        }
+
+        [Authorize(Roles = "Administrador")]
+        public IActionResult Editar(int id)
+        {
+            var usuario = _repositorio.ObtenerPorId(id);
+            if (usuario == null)
+            {
+                TempData["Mensaje"] = "Usuario no encontrado.";
+                TempData["Tipo"] = "warning";
+                return RedirectToAction("Index");
+            }
+            return View(usuario);
         }
 
         [HttpPost]
@@ -154,7 +165,6 @@ namespace inmobiliaria_santi.Controllers
             }
         }
 
-
         [Authorize(Roles = "Empleado,Administrador")]
         public IActionResult EditarPerfil()
         {
@@ -172,18 +182,16 @@ namespace inmobiliaria_santi.Controllers
                 var email = User.Identity?.Name ?? "";
                 var original = _repositorio.ObtenerPorEmail(email);
 
-                if (original != null)
-                {
-                    original.nombre = u.nombre;
-                    original.apellido = u.apellido;
-                    original.email = u.email;
-                }
-                else
+                if (original == null)
                 {
                     TempData["Mensaje"] = "Error: Usuario no encontrado.";
                     TempData["Tipo"] = "error";
                     return View(u);
                 }
+
+                original.nombre = u.nombre;
+                original.apellido = u.apellido;
+                original.email = u.email;
 
                 if (!string.IsNullOrEmpty(nuevaContrasena))
                 {
@@ -213,7 +221,6 @@ namespace inmobiliaria_santi.Controllers
                 return View(u);
             }
         }
-
 
         [Authorize(Roles = "Administrador")]
         public IActionResult EliminarConfirmado(int id)

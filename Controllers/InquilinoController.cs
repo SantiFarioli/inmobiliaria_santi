@@ -15,6 +15,7 @@ namespace inmobiliaria_santi.Controllers
         }
 
         // GET: Inquilino
+        [Authorize(Roles = "Administrador,Empleado")]
         public IActionResult Index()
         {
             var inquilinos = _repositorio.ObtenerTodos();
@@ -22,6 +23,7 @@ namespace inmobiliaria_santi.Controllers
         }
 
         // GET: Inquilino/Crear
+        [Authorize(Roles = "Administrador")]
         public IActionResult Crear()
         {
             return View();
@@ -30,6 +32,7 @@ namespace inmobiliaria_santi.Controllers
         // POST: Inquilino/Crear
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador")]
         public IActionResult Crear(Inquilino inquilino)
         {
             try
@@ -53,6 +56,7 @@ namespace inmobiliaria_santi.Controllers
         }
 
         // GET: Inquilino/Detalle/5
+        [Authorize(Roles = "Administrador,Empleado")]
         public IActionResult Detalle(int id)
         {
             var inquilino = _repositorio.ObtenerPorId(id);
@@ -64,6 +68,7 @@ namespace inmobiliaria_santi.Controllers
         }
 
         // GET: Inquilino/Editar/5
+        [Authorize(Roles = "Administrador")]
         public IActionResult Editar(int id)
         {
             var inquilino = _repositorio.ObtenerPorId(id);
@@ -77,6 +82,7 @@ namespace inmobiliaria_santi.Controllers
         // POST: Inquilino/Editar
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador")]
         public IActionResult Editar(Inquilino inquilino)
         {
             try
@@ -101,6 +107,7 @@ namespace inmobiliaria_santi.Controllers
 
         // GET: Inquilino/EliminarConfirmado/5
         [HttpGet]
+        [Authorize(Roles = "Administrador")]
         public IActionResult EliminarConfirmado(int id)
         {
             try

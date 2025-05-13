@@ -15,6 +15,7 @@ namespace inmobiliaria_santi.Controllers
         }
        
         // GET: Pago
+        [Authorize(Roles = "Administrador,Empleado")]
         public IActionResult Index()
         {
             var pagos = _repositorio.ObtenerTodos();
@@ -22,6 +23,7 @@ namespace inmobiliaria_santi.Controllers
         }
 
         // GET: Pago/Crear
+        [Authorize(Roles = "Administrador")]
         public IActionResult Crear()
         {
             var repoContrato = new RepositorioContrato();
@@ -32,6 +34,7 @@ namespace inmobiliaria_santi.Controllers
         // POST: Pago/Crear
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador")]
         public IActionResult Crear(Pago pago)
         {
             try
@@ -56,6 +59,7 @@ namespace inmobiliaria_santi.Controllers
         }
 
         // GET: Pago/Editar/5
+        [Authorize(Roles = "Administrador")]
         public IActionResult Editar(int id)
         {
             var pago = _repositorio.ObtenerPorId(id);
@@ -67,6 +71,7 @@ namespace inmobiliaria_santi.Controllers
         // POST: Pago/Editar/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador")]
         public IActionResult Editar(int id, Pago pago)
         {
             try
@@ -90,6 +95,7 @@ namespace inmobiliaria_santi.Controllers
         }
 
         // GET: Pago/Detalle/5
+        [Authorize(Roles = "Administrador,Empleado")]
         public IActionResult Detalle(int id)
         {
             var pago = _repositorio.ObtenerPorId(id);
@@ -99,6 +105,7 @@ namespace inmobiliaria_santi.Controllers
         }
 
         // GET: Pago/EliminarConfirmado/5
+        [Authorize(Roles = "Administrador")]
         public IActionResult EliminarConfirmado(int id)
         {
             try

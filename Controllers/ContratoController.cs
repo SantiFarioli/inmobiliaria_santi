@@ -22,6 +22,7 @@ namespace inmobiliaria_santi.Controllers
         }
 
         // GET: Contrato
+        [Authorize(Roles = "Administrador,Empleado")]
         public IActionResult Index()
         {
             var contratos = _repositorioContrato.ObtenerTodos();
@@ -29,6 +30,7 @@ namespace inmobiliaria_santi.Controllers
         }
 
         // GET: Contrato/Crear
+        [Authorize(Roles = "Administrador")]
         public IActionResult Crear()
         {
             // Mostrar inquilinos con su nombre completo y DNI
@@ -55,6 +57,7 @@ namespace inmobiliaria_santi.Controllers
         // POST: Contrato/Crear
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador")]
         public IActionResult Crear(Contrato contrato)
         {
             try
@@ -99,6 +102,7 @@ namespace inmobiliaria_santi.Controllers
         }
 
         // GET: Contrato/Editar/5
+        [Authorize(Roles = "Administrador")]
         public IActionResult Editar(int id)
         {
             var contrato = _repositorioContrato.ObtenerPorId(id);
@@ -131,6 +135,7 @@ namespace inmobiliaria_santi.Controllers
         // POST: Contrato/Editar/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador")]
         public IActionResult Editar(Contrato contrato)
         {
             try
@@ -173,6 +178,7 @@ namespace inmobiliaria_santi.Controllers
         }
 
         // GET: Contrato/Detalle/5
+        [Authorize(Roles = "Administrador,Empleado")]
         public IActionResult Detalle(int id)
         {
             var contrato = _repositorioContrato.ObtenerPorId(id);
@@ -188,6 +194,7 @@ namespace inmobiliaria_santi.Controllers
 
         // GET: Contrato/EliminarConfirmado/5
         [HttpGet]
+        [Authorize(Roles = "Administrador")]
         public IActionResult EliminarConfirmado(int id)
         {
             try
@@ -205,6 +212,7 @@ namespace inmobiliaria_santi.Controllers
         }
 
         // GET: Contrato/RescindirContrato/5
+        [Authorize(Roles = "Administrador")]
         public IActionResult RescindirContrato(int id)
         {
             var contrato = _repositorioContrato.ObtenerPorId(id);
@@ -234,6 +242,7 @@ namespace inmobiliaria_santi.Controllers
         // POST: Contrato/RescindirContrato/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador")]
         public IActionResult RescindirContrato(Contrato contrato)
         {
             try

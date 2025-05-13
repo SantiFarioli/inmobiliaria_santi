@@ -2,12 +2,15 @@
 
 @{
     ViewData["Title"] = "Listado de Propietarios";
+    var esAdmin = User.IsInRole("Administrador");
 }
-
 
 <div class="text-center mb-4">
     <h1>Listado de Propietarios</h1>
-    <a class="btn btn-success" asp-action="Crear">Crear Propietario</a>
+    @if (esAdmin)
+    {
+        <a class="btn btn-success" asp-action="Crear">Crear Propietario</a>
+    }
 </div>
 
 @if (Model != null && Model.Any())
@@ -34,8 +37,11 @@
                 <td>@item.email</td>
                 <td>
                     <a class="btn btn-info btn-sm" asp-action="Detalle" asp-route-id="@item.idPropietario">👁️ Detalle</a>
-                    <a class="btn btn-warning btn-sm" asp-action="Editar" asp-route-id="@item.idPropietario">✏️ Editar</a>
-                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmarEliminacion(@item.idPropietario)">🗑️ Eliminar</button>
+                    @if (esAdmin)
+                    {
+                        <a class="btn btn-warning btn-sm" asp-action="Editar" asp-route-id="@item.idPropietario">✏️ Editar</a>
+                        <button type="button" class="btn btn-danger btn-sm" onclick="confirmarEliminacion(@item.idPropietario)">🗑️ Eliminar</button>
+                    }
                 </td>
             </tr>
         }
@@ -50,6 +56,7 @@ else
 }
 
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         function confirmarEliminacion(id) {
             Swal.fire({

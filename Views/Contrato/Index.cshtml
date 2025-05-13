@@ -2,11 +2,15 @@
 
 @{
     ViewData["Title"] = "Listado de Contratos";
+    var esAdmin = User.IsInRole("Administrador");
 }
 
 <div class="text-center mb-4">
     <h1>Listado de Contratos</h1>
-    <a class="btn btn-success mt-3" asp-action="Crear">Crear Contrato</a>
+    @if (esAdmin)
+    {
+        <a class="btn btn-success mt-3" asp-action="Crear">Crear Contrato</a>
+    }
 </div>
 
 @if (Model != null && Model.Any())
@@ -15,13 +19,13 @@
         <thead class="table-primary">
             <tr>
                 <th>@nameof(inmobiliaria_santi.Models.Contrato.idContrato)</th>
-                <th>@nameof(inmobiliaria_santi.Models.Contrato.InquilinoNombre)</th> <!-- Nombre completo del inquilino -->
-                <th>@nameof(inmobiliaria_santi.Models.Contrato.InmuebleDireccion)</th> <!-- Dirección del inmueble -->
-                <th>@nameof(inmobiliaria_santi.Models.Contrato.PropietarioNombre)</th> <!-- Nombre completo del propietario -->
+                <th>@nameof(inmobiliaria_santi.Models.Contrato.InquilinoNombre)</th>
+                <th>@nameof(inmobiliaria_santi.Models.Contrato.InmuebleDireccion)</th>
+                <th>@nameof(inmobiliaria_santi.Models.Contrato.PropietarioNombre)</th>
                 <th>@nameof(inmobiliaria_santi.Models.Contrato.fechaInicio)</th>
                 <th>@nameof(inmobiliaria_santi.Models.Contrato.fechaFin)</th>
                 <th>@nameof(inmobiliaria_santi.Models.Contrato.montoRenta)</th>
-                <th>Contrato Rescindido</th> <!-- Nueva columna -->
+                <th>Contrato Rescindido</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -30,14 +34,14 @@
         {
             <tr>
                 <td>@item.idContrato</td>
-                <td>@item.InquilinoNombre @item.InquilinoApellido</td> <!-- Nombre completo del inquilino -->
-                <td>@item.InmuebleDireccion</td> <!-- Dirección del inmueble -->
-                <td>@item.PropietarioNombre @item.PropietarioApellido</td> <!-- Nombre completo del propietario -->
+                <td>@item.InquilinoNombre @item.InquilinoApellido</td>
+                <td>@item.InmuebleDireccion</td>
+                <td>@item.PropietarioNombre @item.PropietarioApellido</td>
                 <td>@item.fechaInicio.ToString("dd/MM/yyyy")</td>
                 <td>@item.fechaFin.ToString("dd/MM/yyyy")</td>
-                <td>@String.Format("{0:C}", item.montoRenta)</td> <!-- Mostrar en formato de moneda -->
+                <td>@String.Format("{0:C}", item.montoRenta)</td>
                 <td>
-                    @if (item.estado == false)  
+                    @if (!item.estado)
                     {
                         <span class="badge bg-danger">Rescindido</span>
                     }
@@ -48,8 +52,11 @@
                 </td>
                 <td>
                     <a class="btn btn-info btn-sm" asp-action="Detalle" asp-route-id="@item.idContrato">👁️ Detalle</a>
-                    <a class="btn btn-warning btn-sm" asp-action="Editar" asp-route-id="@item.idContrato">✏️ Editar</a>
-                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmarEliminacion(@item.idContrato)">🗑️ Eliminar</button>
+                    @if (esAdmin)
+                    {
+                        <a class="btn btn-warning btn-sm" asp-action="Editar" asp-route-id="@item.idContrato">✏️ Editar</a>
+                        <button type="button" class="btn btn-danger btn-sm" onclick="confirmarEliminacion(@item.idContrato)">🗑️ Eliminar</button>
+                    }
                 </td>
             </tr>
         }
@@ -64,6 +71,7 @@ else
 }
 
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         function confirmarEliminacion(id) {
             Swal.fire({

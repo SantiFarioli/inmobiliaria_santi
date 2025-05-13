@@ -16,6 +16,7 @@ namespace inmobiliaria_santi.Controllers
        
 
         // GET: Propietario
+        [Authorize(Roles = "Administrador,Empleado")]
         public IActionResult Index()
         {
             var propietarios = _repositorio.ObtenerTodos();
@@ -23,6 +24,7 @@ namespace inmobiliaria_santi.Controllers
         }
 
         // GET: Propietario/Crear
+        [Authorize(Roles = "Administrador")]
         public IActionResult Crear()
         {
             return View();
@@ -31,7 +33,7 @@ namespace inmobiliaria_santi.Controllers
         // POST: Propietario/Crear
         [HttpPost]
         [ValidateAntiForgeryToken]
-        
+        [Authorize(Roles = "Administrador")]
         public IActionResult Crear(Propietario propietario)
         {
             try
@@ -55,6 +57,7 @@ namespace inmobiliaria_santi.Controllers
         }
 
         // GET: Propietario/Detalle/5
+        [Authorize(Roles = "Administrador,Empleado")]
         public IActionResult Detalle(int id)
         {
             var propietario = _repositorio.ObtenerPorId(id);
@@ -66,6 +69,7 @@ namespace inmobiliaria_santi.Controllers
         }
 
         // GET: Propietario/Editar/5
+        [Authorize(Roles = "Administrador")]
         public IActionResult Editar(int id)
         {
             var propietario = _repositorio.ObtenerPorId(id);
@@ -79,6 +83,7 @@ namespace inmobiliaria_santi.Controllers
         // POST: Propietario/Editar/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador")]
         public IActionResult Editar(int id, Propietario propietario)
         {
             try
@@ -102,6 +107,7 @@ namespace inmobiliaria_santi.Controllers
         }  
 
         // GET: Propietario/Eliminar/5
+        [Authorize(Roles = "Administrador")]
         public IActionResult Eliminar(int id)
         {
             var propietario = _repositorio.ObtenerPorId(id);
@@ -113,6 +119,7 @@ namespace inmobiliaria_santi.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Administrador")]
         public IActionResult EliminarConfirmado(int id)
         {
         try

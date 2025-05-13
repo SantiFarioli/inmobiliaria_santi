@@ -1,13 +1,18 @@
 @model IEnumerable<inmobiliaria_santi.Models.Pago>
+@using System.Security.Claims
 @{
     ViewData["Title"] = "Pagos registrados";
+    var esAdmin = User.IsInRole("Administrador");
 }
 
 <h2 class="text-center mb-4">Pagos registrados</h2>
 
-<div class="text-center mb-3">
-    <a asp-action="Crear" class="btn btn-success">Registrar nuevo pago</a>
-</div>
+@if (esAdmin)
+{
+    <div class="text-center mb-3">
+        <a asp-action="Crear" class="btn btn-success">Registrar nuevo pago</a>
+    </div>
+}
 
 <table class="table table-bordered table-hover table-striped table-sm text-center">
     <thead class="table-primary">
@@ -23,11 +28,10 @@
     <tbody>
         @if (Model != null && Model.Any())
         {
-            int i = 1;
             foreach (var item in Model)
             {
                 <tr>
-                    <td>@item.ContratoResumen</td> <!-- ✅ cambio aplicado -->
+                    <td>@item.ContratoResumen</td> 
                     <td>@item.fechaPago.ToShortDateString()</td>
                     <td>@item.importe.ToString("C")</td>
                     <td>@item.nroPago</td>
@@ -36,21 +40,23 @@
                         <a asp-action="Detalle" asp-route-id="@item.idPago" class="btn btn-info btn-sm">
                             👁️ Detalle
                         </a>
-                        <a asp-action="Editar" asp-route-id="@item.idPago" class="btn btn-warning btn-sm">
-                            ✏️ Editar
-                        </a>
-                        <a asp-action="Eliminar" asp-route-id="@item.idPago" class="btn btn-danger btn-sm">
-                            🗑️ Eliminar
-                        </a>
+                        @if (esAdmin)
+                        {
+                            <a asp-action="Editar" asp-route-id="@item.idPago" class="btn btn-warning btn-sm">
+                                ✏️ Editar
+                            </a>
+                            <a asp-action="Eliminar" asp-route-id="@item.idPago" class="btn btn-danger btn-sm">
+                                🗑️ Eliminar
+                            </a>
+                        }
                     </td>
                 </tr>
-                i++;
             }
         }
         else
         {
             <tr>
-                <td colspan="6">No hay pagos registrados.</td> <!-- corregido colspan -->
+                <td colspan="6">No hay pagos registrados.</td>
             </tr>
         }
     </tbody>
