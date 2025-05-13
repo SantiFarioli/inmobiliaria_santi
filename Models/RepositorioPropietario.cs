@@ -101,6 +101,23 @@ using System.Collections.Generic;
             return id;
         }
 
+        public bool ExistePorDniOEmail(int dni, string email)
+        {
+            using (var conexion = new MySqlConnection(connectionString))
+            {
+                var sql = @"SELECT COUNT(*) FROM propietario 
+                            WHERE (dni = @dni OR email = @mail) AND estado = 1";
+                using (var comando = new MySqlCommand(sql, conexion))
+                {
+                    comando.Parameters.AddWithValue("@dni", dni);
+                    comando.Parameters.AddWithValue("@mail", email);
+                    conexion.Open();
+                    return Convert.ToInt32(comando.ExecuteScalar()) > 0;
+                }
+            }
+        }
+
+
         public int ActualizarPropietario(Propietario propietario)
         {
             int filasAfectadas = 0;

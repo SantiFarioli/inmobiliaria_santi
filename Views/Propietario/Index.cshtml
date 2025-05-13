@@ -13,44 +13,51 @@
     }
 </div>
 
+<div class="d-flex justify-content-center mb-4">
+    <form method="get" class="w-100" style="max-width: 600px;">
+        <div class="mb-2">
+            <input type="text" name="q" placeholder="Buscar por nombre, apellido, DNI o email..."
+                   class="form-control text-center" value="@Context.Request.Query["q"]" />
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">
+                🔍 Buscar
+            </button>
+        </div>
+    </form>
+</div>
+
 @if (Model != null && Model.Any())
 {
-    <table class="table table-bordered table-striped table-hover">
-        <thead class="table-primary">
-            <tr>
-                <th>@nameof(inmobiliaria_santi.Models.Propietario.nombre)</th>
-                <th>@nameof(inmobiliaria_santi.Models.Propietario.apellido)</th>
-                <th>@nameof(inmobiliaria_santi.Models.Propietario.dni)</th>
-                <th>@nameof(inmobiliaria_santi.Models.Propietario.telefono)</th>
-                <th>@nameof(inmobiliaria_santi.Models.Propietario.email)</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
         @foreach (var item in Model)
         {
-            <tr>
-                <td>@item.nombre</td>
-                <td>@item.apellido</td>
-                <td>@item.dni</td>
-                <td>@item.telefono</td>
-                <td>@item.email</td>
-                <td>
-                    <a class="btn btn-info btn-sm" asp-action="Detalle" asp-route-id="@item.idPropietario">👁️ Detalle</a>
-                    @if (esAdmin)
-                    {
-                        <a class="btn btn-warning btn-sm" asp-action="Editar" asp-route-id="@item.idPropietario">✏️ Editar</a>
-                        <button type="button" class="btn btn-danger btn-sm" onclick="confirmarEliminacion(@item.idPropietario)">🗑️ Eliminar</button>
-                    }
-                </td>
-            </tr>
+            <div class="col">
+                <div class="card shadow-sm border-primary h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">@item.nombre @item.apellido</h5>
+                        <p class="card-text">
+                            <strong>DNI:</strong> @item.dni<br />
+                            <strong>Teléfono:</strong> @item.telefono<br />
+                            <strong>Email:</strong> @item.email
+                        </p>
+                        <div class="d-flex justify-content-between">
+                            <a class="btn btn-info btn-sm" asp-action="Detalle" asp-route-id="@item.idPropietario">👁️ Detalle</a>
+                            @if (esAdmin)
+                            {
+                                <a class="btn btn-warning btn-sm" asp-action="Editar" asp-route-id="@item.idPropietario">✏️ Editar</a>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="confirmarEliminacion(@item.idPropietario)">🗑️</button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
         }
-        </tbody>
-    </table>
+    </div>
 }
 else
 {
-    <div class="alert alert-info">
+    <div class="alert alert-info text-center">
         No hay propietarios registrados aún.
     </div>
 }

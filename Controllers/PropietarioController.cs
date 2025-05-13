@@ -17,9 +17,20 @@ namespace inmobiliaria_santi.Controllers
 
         // GET: Propietario
         [Authorize(Roles = "Administrador,Empleado")]
-        public IActionResult Index()
+        public IActionResult Index(string q)
         {
             var propietarios = _repositorio.ObtenerTodos();
+
+            if (!string.IsNullOrEmpty(q))
+            {
+                q = q.ToLower();
+                propietarios = propietarios.Where(p =>
+                    (p.nombre != null && p.nombre.ToLower().Contains(q)) ||
+                    (p.apellido != null && p.apellido.ToLower().Contains(q)) ||
+                    p.dni.ToString().Contains(q) ||
+                    (p.email != null && p.email.ToLower().Contains(q))
+                ).ToList();
+            }
             return View(propietarios);
         }
 
@@ -40,11 +51,20 @@ namespace inmobiliaria_santi.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    // Validación de duplicados por DNI o Email
+                    if (_repositorio.ExistePorDniOEmail(propietario.dni, propietario.email))
+                    {
+                        TempData["Mensaje"] = "Ya existe un propietario con ese DNI o Email.";
+                        TempData["Tipo"] = "warning";
+                        return View(propietario);
+                    }
+
                     _repositorio.CrearPropietario(propietario);
                     TempData["Mensaje"] = "Propietario creado correctamente.";
-                    TempData["Tipo"] = "success"; // success | error | warning | info
+                    TempData["Tipo"] = "success";
                     return RedirectToAction(nameof(Index));
                 }
+
                 TempData["Mensaje"] = "Error en la validación del formulario.";
                 TempData["Tipo"] = "warning";
             }
@@ -53,8 +73,10 @@ namespace inmobiliaria_santi.Controllers
                 TempData["Mensaje"] = "Error inesperado: " + ex.Message;
                 TempData["Tipo"] = "error";
             }
+
             return View(propietario);
         }
+
 
         // GET: Propietario/Detalle/5
         [Authorize(Roles = "Administrador,Empleado")]
