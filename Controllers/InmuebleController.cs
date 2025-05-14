@@ -23,11 +23,24 @@ namespace inmobiliaria_santi.Controllers
 
         // GET: Inmueble
         [Authorize(Roles = "Administrador,Empleado")]
-        public IActionResult Index()
+        public IActionResult Index(string q)
         {
             var inmuebles = _repositorio.ObtenerTodos();
+
+            if (!string.IsNullOrEmpty(q))
+            {
+                q = q.ToLower();
+                inmuebles = inmuebles.Where(i =>
+                    (!string.IsNullOrEmpty(i.direccion) && i.direccion.ToLower().Contains(q)) ||
+                    (!string.IsNullOrEmpty(i.uso) && i.uso.ToLower().Contains(q)) ||
+                    (!string.IsNullOrEmpty(i.PropietarioNombre) && i.PropietarioNombre.ToLower().Contains(q)) ||
+                    (!string.IsNullOrEmpty(i.PropietarioApellido) && i.PropietarioApellido.ToLower().Contains(q))
+                ).ToList();
+            }
+
             return View(inmuebles);
         }
+
 
         // GET: Inmueble/Crear
         [Authorize(Roles = "Administrador")]
@@ -55,13 +68,24 @@ namespace inmobiliaria_santi.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    _repositorio.CrearInmueble(inmueble);
-                    TempData["Mensaje"] = "¡Inmueble creado correctamente!";
-                    TempData["Tipo"] = "success";
-                    return RedirectToAction(nameof(Index));
+                    if (_repositorio.ExistePorDireccion(inmueble.direccion))
+                    {
+                        TempData["Mensaje"] = "Ya existe un inmueble registrado con esa dirección.";
+                        TempData["Tipo"] = "warning";
+                    }
+                    else
+                    {
+                        _repositorio.CrearInmueble(inmueble);
+                        TempData["Mensaje"] = "¡Inmueble creado correctamente!";
+                        TempData["Tipo"] = "success";
+                        return RedirectToAction(nameof(Index));
+                    }
                 }
-                TempData["Mensaje"] = "Error en la validación del formulario.";
-                TempData["Tipo"] = "warning";
+                else
+                {
+                    TempData["Mensaje"] = "Error en la validación del formulario.";
+                    TempData["Tipo"] = "warning";
+                }
             }
             catch (Exception ex)
             {

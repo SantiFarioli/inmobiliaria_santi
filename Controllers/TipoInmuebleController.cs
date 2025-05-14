@@ -34,11 +34,19 @@ namespace inmobiliaria_santi.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    if (_repositorio.ExistePorNombre(tipo.nombre))
+                    {
+                        TempData["Mensaje"] = "Ya existe un tipo de inmueble con ese nombre.";
+                        TempData["Tipo"] = "warning";
+                        return View(tipo);
+                    }
+
                     _repositorio.CrearTipoInmueble(tipo);
                     TempData["Mensaje"] = "¡Tipo de inmueble creado correctamente!";
                     TempData["Tipo"] = "success";
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction("Crear", "Inmueble");
                 }
+
                 TempData["Mensaje"] = "Error en la validación del formulario.";
                 TempData["Tipo"] = "warning";
             }

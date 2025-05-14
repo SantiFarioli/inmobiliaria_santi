@@ -8,57 +8,70 @@
     <h1>Editar Inmueble</h1>
 </div>
 
-<div class="card mx-auto" style="max-width: 700px;">
-    <div class="card-body">
-        <form asp-action="Editar" method="post">
-            <input type="hidden" asp-for="idInmueble" />
+<div class="d-flex justify-content-center">
+    <div class="card shadow-sm" style="max-width: 700px; width: 100%;">
+        <div class="card-body">
+            <form asp-action="Editar" method="post">
+                <input type="hidden" asp-for="idInmueble" />
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <div class="mb-3">
-                <label asp-for="direccion" class="form-label">Dirección</label>
-                <input asp-for="direccion" class="form-control" />
-            </div>
+                <div class="mb-3">
+                    <label asp-for="direccion" class="form-label">Dirección</label>
+                    <input asp-for="direccion" class="form-control" />
+                    <span asp-validation-for="direccion" class="text-danger"></span>
+                </div>
 
-            <div class="mb-3">
-                <label asp-for="uso" class="form-label">Uso</label>
-                <input asp-for="uso" class="form-control" />
-            </div>
+                <div class="mb-3">
+                    <label asp-for="uso" class="form-label">Uso</label>
+                    <input asp-for="uso" class="form-control" />
+                    <span asp-validation-for="uso" class="text-danger"></span>
+                </div>
 
-            <div class="mb-3">
-                <label asp-for="cantAmbiente" class="form-label">Cantidad de Ambientes</label>
-                <input asp-for="cantAmbiente" class="form-control" type="number" min="1" />
-            </div>
+                <div class="mb-3">
+                    <label asp-for="cantAmbiente" class="form-label">Cantidad de Ambientes</label>
+                    <input asp-for="cantAmbiente" class="form-control" type="number" min="1" />
+                    <span asp-validation-for="cantAmbiente" class="text-danger"></span>
+                </div>
 
-            <div class="mb-3">
-                <label asp-for="valor" class="form-label">Valor</label>
-                <input asp-for="valor" class="form-control" type="number" step="0.01" min="0" />
-            </div>
+                <div class="mb-3">
+                    <label asp-for="valor" class="form-label">Valor</label>
+                    <input asp-for="valor" class="form-control" type="number" step="0.01" min="0" />
+                    <span asp-validation-for="valor" class="text-danger"></span>
+                </div>
 
-            <div class="mb-3">
-                <label asp-for="disponible" class="form-label">Disponible</label>
-                <select asp-for="disponible" class="form-select">
-                    <option value="true" selected="@(Model.disponible)">Sí</option>
-                    <option value="false" selected="@(Model.disponible ? "false" : "true")">No</option>
-                </select>
-            </div>
+                <div class="mb-3">
+                    <label asp-for="disponible" class="form-label">Disponible</label>
+                    <select asp-for="disponible" class="form-select">
+                        <option value="true">Sí</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
 
-            <div class="mb-3">
-                <label asp-for="idPropietario" class="form-label">Propietario</label>
-                <select asp-for="idPropietario" asp-items="ViewBag.Propietarios" class="form-select">
-                    <option value="">Seleccione un propietario</option>
-                </select>
-            </div>
+                <div class="mb-3">
+                    <label asp-for="idPropietario" class="form-label">Propietario</label>
+                    <select asp-for="idPropietario" asp-items="ViewBag.Propietarios" class="form-select">
+                        <option value="">Seleccione un propietario</option>
+                    </select>
+                    <span asp-validation-for="idPropietario" class="text-danger"></span>
+                </div>
 
-            <div class="mb-3">
-                <label asp-for="idTipoInmueble" class="form-label">Tipo de Inmueble</label>
-                <select asp-for="idTipoInmueble" asp-items="ViewBag.Tipos" class="form-select">
-                    <option value="">Seleccione un tipo de inmueble</option>
-                </select>
-            </div>
+                <div class="mb-3">
+                    <label asp-for="idTipoInmueble" class="form-label">Tipo de Inmueble</label>
+                    <select asp-for="idTipoInmueble" asp-items="ViewBag.Tipos" class="form-select">
+                        <option value="">Seleccione un tipo de inmueble</option>
+                    </select>
+                    <span asp-validation-for="idTipoInmueble" class="text-danger"></span>
+                </div>
 
-            <div class="text-center">
-                <button type="submit" class="btn btn-primary">💾 Guardar</button>
-                <a asp-action="Index" class="btn btn-secondary">🔙 Volver</a>
-            </div>
-        </form>
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary me-2">💾 Guardar Cambios</button>
+                    <a asp-action="Index" class="btn btn-secondary">🔙 Volver</a>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -82,6 +82,23 @@ namespace inmobiliaria_santi.Models
             return id;
         }
 
+        public bool ExistePorNombre(string nombre)
+        {
+            using (var conexion = new MySqlConnection(connectionString))
+            {
+                var sql = $@"SELECT COUNT(*) FROM tipoinmueble 
+                            WHERE {nameof(TipoInmueble.nombre)} = @{nameof(nombre)} 
+                            AND {nameof(TipoInmueble.activo)} = 1";
+                using (var comando = new MySqlCommand(sql, conexion))
+                {
+                    comando.Parameters.AddWithValue($"@{nameof(nombre)}", nombre);
+                    conexion.Open();
+                    return Convert.ToInt32(comando.ExecuteScalar()) > 0;
+                }
+            }
+        }
+
+
         public int ActualizarTipoInmueble(TipoInmueble tipo)
         {
             int filasAfectadas = 0;
