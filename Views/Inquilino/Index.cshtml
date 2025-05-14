@@ -9,48 +9,77 @@
     <h1>Listado de Inquilinos</h1>
     @if (esAdmin)
     {
-        <a class="btn btn-success mt-3" asp-action="Crear">Crear Inquilino</a>
+        <a class="btn btn-success" asp-action="Crear">Crear Inquilino</a>
     }
+</div>
+
+<div class="d-flex justify-content-center mb-4">
+    <form method="get" class="w-100" style="max-width: 600px;">
+        <div class="mb-2">
+            <input type="text" name="q" placeholder="Buscar por nombre, apellido, DNI o email..."
+                   class="form-control text-center" value="@Context.Request.Query["q"]" />
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">
+                🔍 Buscar
+            </button>
+        </div>
+    </form>
 </div>
 
 @if (Model != null && Model.Any())
 {
-    <table class="table table-bordered table-striped table-hover">
-        <thead class="table-primary">
-            <tr>
-                <th>@nameof(inmobiliaria_santi.Models.Inquilino.nombre)</th>
-                <th>@nameof(inmobiliaria_santi.Models.Inquilino.apellido)</th>
-                <th>@nameof(inmobiliaria_santi.Models.Inquilino.dni)</th>
-                <th>@nameof(inmobiliaria_santi.Models.Inquilino.telefono)</th>
-                <th>@nameof(inmobiliaria_santi.Models.Inquilino.email)</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.nombre</td>
-                <td>@item.apellido</td>
-                <td>@item.dni</td>
-                <td>@item.telefono</td>
-                <td>@item.email</td>
-                <td>
-                    <a class="btn btn-info btn-sm" asp-action="Detalle" asp-route-id="@item.idInquilino">👁️ Detalle</a>
-                    @if (esAdmin)
+    <div class="d-flex justify-content-center">
+        <div class="table-responsive" style="max-width: 1000px;">
+            <table class="table table-striped table-bordered table-hover rounded shadow-sm align-middle text-center">
+                <thead class="table-primary">
+                    <tr>
+                        <th>👤 Nombre</th>
+                        <th>👥 Apellido</th>
+                        <th>🪪 DNI</th>
+                        <th>📞 Teléfono</th>
+                        <th>📧 Email</th>
+                        <th>⚙️ Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
                     {
-                        <a class="btn btn-warning btn-sm" asp-action="Editar" asp-route-id="@item.idInquilino">✏️ Editar</a>
-                        <button type="button" class="btn btn-danger btn-sm" onclick="confirmarEliminacion(@item.idInquilino)">🗑️ Eliminar</button>
+                        <tr>
+                            <td>@item.nombre</td>
+                            <td>@item.apellido</td>
+                            <td>@item.dni</td>
+                            <td>@item.telefono</td>
+                            <td>
+                                @if (string.IsNullOrWhiteSpace(item.email))
+                                {
+                                    <span class="text-danger fw-bold">Sin email</span>
+                                }
+                                else
+                                {
+                                    @item.email
+                                }
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a class="btn btn-info btn-sm" asp-action="Detalle" asp-route-id="@item.idInquilino" title="Detalle">👁️</a>
+                                    @if (esAdmin)
+                                    {
+                                        <a class="btn btn-warning btn-sm" asp-action="Editar" asp-route-id="@item.idInquilino" title="Editar">✏️</a>
+                                        <button type="button" class="btn btn-danger btn-sm" title="Eliminar" onclick="confirmarEliminacion(@item.idInquilino)">🗑️</button>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
                     }
-                </td>
-            </tr>
-        }
-        </tbody>
-    </table>
+                </tbody>
+            </table>
+        </div>
+    </div>
 }
 else
 {
-    <div class="alert alert-info">
+    <div class="alert alert-info text-center">
         No hay inquilinos registrados aún.
     </div>
 }

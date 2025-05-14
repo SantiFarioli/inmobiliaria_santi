@@ -16,9 +16,19 @@ namespace inmobiliaria_santi.Controllers
 
         // GET: Inquilino
         [Authorize(Roles = "Administrador,Empleado")]
-        public IActionResult Index()
+        public IActionResult Index(string q)
         {
             var inquilinos = _repositorio.ObtenerTodos();
+            if (!string.IsNullOrEmpty(q))
+            {
+                q = q.ToLower();
+                inquilinos = inquilinos.Where(i =>
+                    (i.nombre != null && i.nombre.ToLower().Contains(q)) ||
+                    (i.apellido != null && i.apellido.ToLower().Contains(q)) ||
+                    i.dni.Contains(q) ||
+                    (i.email != null && i.email.ToLower().Contains(q))
+                ).ToList();
+            }
             return View(inquilinos);
         }
 
@@ -39,11 +49,19 @@ namespace inmobiliaria_santi.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    if (_repositorio.ExistePorDniOEmail(inquilino.dni, inquilino.email))
+                    {
+                        TempData["Mensaje"] = "Ya existe un inquilino con ese DNI o Email.";
+                        TempData["Tipo"] = "warning";
+                        return View(inquilino);
+                    }
+
                     _repositorio.CrearInquilino(inquilino);
                     TempData["Mensaje"] = "¡Inquilino creado correctamente!";
                     TempData["Tipo"] = "success";
                     return RedirectToAction(nameof(Index));
                 }
+
                 TempData["Mensaje"] = "Error en la validación del formulario.";
                 TempData["Tipo"] = "warning";
             }
@@ -52,8 +70,10 @@ namespace inmobiliaria_santi.Controllers
                 TempData["Mensaje"] = "Error inesperado: " + ex.Message;
                 TempData["Tipo"] = "error";
             }
+
             return View(inquilino);
         }
+
 
         // GET: Inquilino/Detalle/5
         [Authorize(Roles = "Administrador,Empleado")]

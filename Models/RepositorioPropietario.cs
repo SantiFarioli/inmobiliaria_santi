@@ -105,17 +105,19 @@ using System.Collections.Generic;
         {
             using (var conexion = new MySqlConnection(connectionString))
             {
-                var sql = @"SELECT COUNT(*) FROM propietario 
-                            WHERE (dni = @dni OR email = @mail) AND estado = 1";
+                var sql = $@"SELECT COUNT(*) FROM propietario 
+                            WHERE ({nameof(Propietario.dni)} = @{nameof(dni)} OR {nameof(Propietario.email)} = @{nameof(email)}) 
+                            AND {nameof(Propietario.estado)} = 1";
                 using (var comando = new MySqlCommand(sql, conexion))
                 {
-                    comando.Parameters.AddWithValue("@dni", dni);
-                    comando.Parameters.AddWithValue("@mail", email);
+                    comando.Parameters.AddWithValue($"@{nameof(dni)}", dni);
+                    comando.Parameters.AddWithValue($"@{nameof(email)}", email);
                     conexion.Open();
                     return Convert.ToInt32(comando.ExecuteScalar()) > 0;
                 }
             }
         }
+
 
 
         public int ActualizarPropietario(Propietario propietario)

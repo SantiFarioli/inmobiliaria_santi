@@ -8,27 +8,18 @@
     <h1>Detalle del Inquilino</h1>
 </div>
 
-<div class="card mx-auto" style="max-width: 600px;">
-    <div class="card-body">
-        <dl class="row">
-            <dt class="col-sm-4">Nombre</dt>
-            <dd class="col-sm-8">@Model.nombre</dd>
+<div class="d-flex justify-content-center">
+    <div class="card shadow-sm text-center" style="max-width: 500px; width: 100%;">
+        <div class="card-body">
+            <h5 class="mb-3 fw-bold">@Model.nombre @Model.apellido</h5>
 
-            <dt class="col-sm-4">Apellido</dt>
-            <dd class="col-sm-8">@Model.apellido</dd>
+            <p><strong>DNI:</strong> @Model.dni</p>
+            <p><strong>Teléfono:</strong> @Model.telefono</p>
+            <p><strong>Email:</strong> @Model.email</p>
 
-            <dt class="col-sm-4">DNI</dt>
-            <dd class="col-sm-8">@Model.dni</dd>
-
-            <dt class="col-sm-4">Teléfono</dt>
-            <dd class="col-sm-8">@Model.telefono</dd>
-
-            <dt class="col-sm-4">Email</dt>
-            <dd class="col-sm-8">@Model.email</dd>
-        </dl>
-
-        <div class="text-center">
-            <a asp-action="Index" class="btn btn-secondary">🔙 Volver</a>
+            <div class="text-center mt-4">
+                <a asp-action="Index" class="btn btn-secondary">🔙 Volver</a>
+            </div>
         </div>
     </div>
 </div>

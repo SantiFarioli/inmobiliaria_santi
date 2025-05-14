@@ -98,6 +98,24 @@ namespace inmobiliaria_santi.Models
             return id;
         }
 
+        public bool ExistePorDniOEmail(string dni, string email)
+        {
+            using (var conexion = new MySqlConnection(connectionString))
+            {
+                var sql = $@"SELECT COUNT(*) FROM inquilino 
+                            WHERE ({nameof(Inquilino.dni)} = @{nameof(dni)} OR {nameof(Inquilino.email)} = @{nameof(email)}) 
+                            AND {nameof(Inquilino.estado)} = 1";
+                using (var comando = new MySqlCommand(sql, conexion))
+                {
+                    comando.Parameters.AddWithValue($"@{nameof(dni)}", dni);
+                    comando.Parameters.AddWithValue($"@{nameof(email)}", email);
+                    conexion.Open();
+                    return Convert.ToInt32(comando.ExecuteScalar()) > 0;
+                }
+            }
+        }
+
+
         public int ActualizarInquilino(Inquilino inquilino)
         {
             int filasAfectadas = 0;
