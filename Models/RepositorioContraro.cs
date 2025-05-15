@@ -41,7 +41,7 @@ namespace inmobiliaria_santi.Models
                     JOIN inmueble i ON c.{nameof(Contrato.idInmueble)} = i.{nameof(Inmueble.idInmueble)}
                     JOIN inquilino inq ON c.{nameof(Contrato.idInquilino)} = inq.{nameof(Inquilino.idInquilino)}
                     JOIN propietario p ON i.{nameof(Inmueble.idPropietario)} = p.{nameof(Propietario.idPropietario)}";
-                    
+
 
                 try
                 {
@@ -120,7 +120,7 @@ namespace inmobiliaria_santi.Models
                     JOIN inquilino inq ON c.{nameof(Contrato.idInquilino)} = inq.{nameof(Inquilino.idInquilino)}
                     JOIN propietario p ON i.{nameof(Inmueble.idPropietario)} = p.{nameof(Propietario.idPropietario)}
                     WHERE c.{nameof(Contrato.idContrato)} = @idContrato";
-        
+
                 try
                 {
                     using (var comando = new MySqlCommand(sql, conexion))
@@ -309,6 +309,27 @@ namespace inmobiliaria_santi.Models
             }
             return contratos;
         }
+        
+        public bool ExisteContratoActivoEnFechas(int idInmueble, DateTime fechaInicio, DateTime fechaFin)
+        {
+            using var conexion = new MySqlConnection(connectionString);
+            var sql = $@"
+                SELECT COUNT(*) FROM contrato
+                WHERE {nameof(Contrato.idInmueble)} = @{nameof(idInmueble)}
+                AND {nameof(Contrato.estado)} = 1
+                AND (@{nameof(fechaInicio)} <= {nameof(Contrato.fechaFin)}
+                AND @{nameof(fechaFin)} >= {nameof(Contrato.fechaInicio)})";
+
+            using var comando = new MySqlCommand(sql, conexion);
+            comando.Parameters.AddWithValue($"@{nameof(idInmueble)}", idInmueble);
+            comando.Parameters.AddWithValue($"@{nameof(fechaInicio)}", fechaInicio);
+            comando.Parameters.AddWithValue($"@{nameof(fechaFin)}", fechaFin);
+
+            conexion.Open();
+            int cantidad = Convert.ToInt32(comando.ExecuteScalar());
+            return cantidad > 0;
+        }
+
 
     }
 }

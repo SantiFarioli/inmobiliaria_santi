@@ -23,9 +23,22 @@ namespace inmobiliaria_santi.Controllers
 
         // GET: Contrato
         [Authorize(Roles = "Administrador,Empleado")]
-        public IActionResult Index()
+       public IActionResult Index(string q)
         {
             var contratos = _repositorioContrato.ObtenerTodos();
+
+            if (!string.IsNullOrEmpty(q))
+            {
+                q = q.ToLower();
+                contratos = contratos.Where(c =>
+                    (!string.IsNullOrEmpty(c.InquilinoNombre) && c.InquilinoNombre.ToLower().Contains(q)) ||
+                    (!string.IsNullOrEmpty(c.InquilinoApellido) && c.InquilinoApellido.ToLower().Contains(q)) ||
+                    (!string.IsNullOrEmpty(c.PropietarioNombre) && c.PropietarioNombre.ToLower().Contains(q)) ||
+                    (!string.IsNullOrEmpty(c.PropietarioApellido) && c.PropietarioApellido.ToLower().Contains(q)) ||
+                    (!string.IsNullOrEmpty(c.InmuebleDireccion) && c.InmuebleDireccion.ToLower().Contains(q))
+                ).ToList();
+            }
+
             return View(contratos);
         }
 
@@ -55,6 +68,7 @@ namespace inmobiliaria_santi.Controllers
         }
 
         // POST: Contrato/Crear
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador")]
@@ -62,44 +76,67 @@ namespace inmobiliaria_santi.Controllers
         {
             try
             {
+                if (_repositorioContrato.ExisteContratoActivoEnFechas(
+                    contrato.idInmueble, contrato.fechaInicio, contrato.fechaFin))
+                {
+                    TempData["Mensaje"] = "⚠️ El inmueble ya tiene un contrato activo en ese período.";
+                    TempData["Tipo"] = "warning";
+
+                    // Recargar dropdowns
+                    ViewBag.Inquilinos = new SelectList(
+                        _repositorioInquilino.ObtenerTodos().Select(i => new {
+                            i.idInquilino,
+                            NombreCompleto = i.nombre + " " + i.apellido + " - DNI: " + i.dni
+                        }),
+                        "idInquilino", "NombreCompleto", contrato.idInquilino);
+
+                    ViewBag.Inmuebles = new SelectList(
+                        _repositorioInmueble.ObtenerTodos().Select(i => new {
+                            i.idInmueble,
+                            Direccion = i.direccion + " - " + i.uso
+                        }),
+                        "idInmueble", "Direccion", contrato.idInmueble);
+
+                    return View(contrato);
+                }
+
                 if (ModelState.IsValid)
                 {
                     contrato.estado = true;
                     contrato.usuarioCreacion = User.Identity?.Name ?? "sistema";
                     _repositorioContrato.CrearContrato(contrato);
-                    TempData["Mensaje"] = "Contrato creado correctamente";
+                    TempData["Mensaje"] = "✅ Contrato creado correctamente.";
                     TempData["Tipo"] = "success";
                     return RedirectToAction(nameof(Index));
                 }
 
-                TempData["Mensaje"] = "Error en la validación del formulario.";
+                TempData["Mensaje"] = "❌ Error en la validación del formulario.";
                 TempData["Tipo"] = "warning";
             }
             catch (Exception ex)
             {
-                TempData["Mensaje"] = "Error inesperado: " + ex.Message;
+                TempData["Mensaje"] = "🚨 Error inesperado: " + ex.Message;
                 TempData["Tipo"] = "error";
             }
 
-            // Si hay error, recargar los dropdowns
-            ViewBag.Inquilinos = new SelectList(
-                _repositorioInquilino.ObtenerTodos()
-                .Select(i => new { 
-                    i.idInquilino, 
-                    NombreCompleto = i.nombre + " " + i.apellido + " - DNI: " + i.dni 
-                }), 
-                "idInquilino", "NombreCompleto", contrato.idInquilino);
+    // Recargar dropdowns si hubo error
+    ViewBag.Inquilinos = new SelectList(
+        _repositorioInquilino.ObtenerTodos().Select(i => new {
+            i.idInquilino,
+            NombreCompleto = i.nombre + " " + i.apellido + " - DNI: " + i.dni
+        }),
+        "idInquilino", "NombreCompleto", contrato.idInquilino);
 
-            ViewBag.Inmuebles = new SelectList(
-                _repositorioInmueble.ObtenerTodos()
-                .Select(i => new { 
-                    i.idInmueble, 
-                    Direccion = i.direccion + " - " + i.uso 
-                }), 
-                "idInmueble", "Direccion", contrato.idInmueble);
+    ViewBag.Inmuebles = new SelectList(
+        _repositorioInmueble.ObtenerTodos().Select(i => new {
+            i.idInmueble,
+            Direccion = i.direccion + " - " + i.uso
+        }),
+        "idInmueble", "Direccion", contrato.idInmueble);
 
-            return View(contrato);
-        }
+    return View(contrato);
+}
+
 
         // GET: Contrato/Editar/5
         [Authorize(Roles = "Administrador")]
@@ -140,42 +177,73 @@ namespace inmobiliaria_santi.Controllers
         {
             try
             {
+                if (_repositorioContrato.ExisteContratoActivoEnFechas(
+                    contrato.idInmueble, contrato.fechaInicio, contrato.fechaFin))
+                {
+                    var contratoExistente = _repositorioContrato.ObtenerPorId(contrato.idContrato);
+
+                    if (contratoExistente != null &&
+                        (contratoExistente.idInmueble != contrato.idInmueble ||
+                        contratoExistente.fechaInicio != contrato.fechaInicio ||
+                        contratoExistente.fechaFin != contrato.fechaFin))
+                    {
+                        TempData["Mensaje"] = "⚠️ Ya existe otro contrato activo en ese período para este inmueble.";
+                        TempData["Tipo"] = "warning";
+
+                        // Recargar dropdowns
+                        ViewBag.Inquilinos = new SelectList(
+                            _repositorioInquilino.ObtenerTodos().Select(i => new {
+                                i.idInquilino,
+                                NombreCompleto = i.nombre + " " + i.apellido + " - DNI: " + i.dni
+                            }),
+                            "idInquilino", "NombreCompleto", contrato.idInquilino);
+
+                        ViewBag.Inmuebles = new SelectList(
+                            _repositorioInmueble.ObtenerTodos().Select(i => new {
+                                i.idInmueble,
+                                Direccion = i.direccion + " - " + i.uso
+                            }),
+                            "idInmueble", "Direccion", contrato.idInmueble);
+
+                        return View(contrato);
+                    }
+                }
+
                 if (ModelState.IsValid)
                 {
                     _repositorioContrato.ActualizarContrato(contrato);
-                    TempData["Mensaje"] = "Contrato actualizado correctamente";
+                    TempData["Mensaje"] = "✅ Contrato actualizado correctamente.";
                     TempData["Tipo"] = "success";
                     return RedirectToAction(nameof(Index));
                 }
 
-                TempData["Mensaje"] = "Error en la validación del formulario.";
+                TempData["Mensaje"] = "❌ Error en la validación del formulario.";
                 TempData["Tipo"] = "warning";
             }
             catch (Exception ex)
             {
-                TempData["Mensaje"] = "Error inesperado: " + ex.Message;
+                TempData["Mensaje"] = "🚨 Error inesperado: " + ex.Message;
                 TempData["Tipo"] = "error";
             }
 
             // Recargar dropdowns en caso de error
             ViewBag.Inquilinos = new SelectList(
-                _repositorioInquilino.ObtenerTodos()
-                .Select(i => new { 
-                    i.idInquilino, 
-                    NombreCompleto = i.nombre + " " + i.apellido + " - DNI: " + i.dni 
-                }), 
+                _repositorioInquilino.ObtenerTodos().Select(i => new {
+                    i.idInquilino,
+                    NombreCompleto = i.nombre + " " + i.apellido + " - DNI: " + i.dni
+                }),
                 "idInquilino", "NombreCompleto", contrato.idInquilino);
 
             ViewBag.Inmuebles = new SelectList(
-                _repositorioInmueble.ObtenerTodos()
-                .Select(i => new { 
-                    i.idInmueble, 
-                    Direccion = i.direccion + " - " + i.uso 
-                }), 
+                _repositorioInmueble.ObtenerTodos().Select(i => new {
+                    i.idInmueble,
+                    Direccion = i.direccion + " - " + i.uso
+                }),
                 "idInmueble", "Direccion", contrato.idInmueble);
 
             return View(contrato);
         }
+
 
         // GET: Contrato/Detalle/5
         [Authorize(Roles = "Administrador,Empleado")]

@@ -14,24 +14,21 @@
 </div>
 
 <div class="d-flex justify-content-center mb-4">
-    <form method="get" class="w-100" style="max-width: 700px;">
-        <div class="mb-2">
-            <input type="text" name="q" placeholder="Buscar por inquilino, propietario o dirección..."
-                   class="form-control text-center" value="@Context.Request.Query["q"]" />
-        </div>
-        <div class="text-center">
-            <button type="submit" class="btn btn-primary">🔍 Buscar</button>
+    <form method="get" class="w-100" style="max-width: 600px;">
+        <div class="input-group">
+            <input type="text" name="q" class="form-control text-center" placeholder="Buscar por inquilino, propietario o dirección..."
+                   value="@Context.Request.Query["q"]" />
+            <button class="btn btn-primary" type="submit">🔍 Buscar</button>
         </div>
     </form>
 </div>
 
 @if (Model != null && Model.Any())
 {
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped table-hover shadow-sm align-middle text-center">
-            <thead class="table-primary">
+    <div class="table-responsive mx-auto" style="max-width: 1200px;">
+        <table class="table table-bordered table-striped table-hover">
+            <thead class="table-primary text-center align-middle">
                 <tr>
-                    <th>#</th>
                     <th>👤 Inquilino</th>
                     <th>🏠 Inmueble</th>
                     <th>👥 Propietario</th>
@@ -42,39 +39,36 @@
                     <th>⚙️ Acciones</th>
                 </tr>
             </thead>
-            <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>@item.idContrato</td>
-                    <td>@item.InquilinoNombre @item.InquilinoApellido</td>
-                    <td>@item.InmuebleDireccion</td>
-                    <td>@item.PropietarioNombre @item.PropietarioApellido</td>
-                    <td>@item.fechaInicio.ToString("dd/MM/yyyy")</td>
-                    <td>@item.fechaFin.ToString("dd/MM/yyyy")</td>
-                    <td>$ @item.montoRenta?.ToString("N2")</td>
-                    <td>
-                        @if (!item.estado)
-                        {
-                            <span class="badge bg-danger">Rescindido</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-success">Activo</span>
-                        }
-                    </td>
-                    <td>
-                        <div class="btn-group" role="group">
-                            <a class="btn btn-info btn-sm" asp-action="Detalle" asp-route-id="@item.idContrato" title="Ver detalle">👁️</a>
+            <tbody class="align-middle">
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.InquilinoNombre @item.InquilinoApellido</td>
+                        <td>@item.InmuebleDireccion</td>
+                        <td>@item.PropietarioNombre @item.PropietarioApellido</td>
+                        <td>@item.fechaInicio.ToString("dd/MM/yyyy")</td>
+                        <td>@item.fechaFin.ToString("dd/MM/yyyy")</td>
+                        <td>@item.montoRenta?.ToString("C")</td>
+                        <td>
+                            @if (!item.estado)
+                            {
+                                <span class="badge bg-danger">Rescindido</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">Activo</span>
+                            }
+                        </td>
+                        <td class="text-center">
+                            <a class="btn btn-info btn-sm" asp-action="Detalle" asp-route-id="@item.idContrato">👁️</a>
                             @if (esAdmin)
                             {
-                                <a class="btn btn-warning btn-sm" asp-action="Editar" asp-route-id="@item.idContrato" title="Editar">✏️</a>
-                                <button type="button" class="btn btn-danger btn-sm" onclick="confirmarEliminacion(@item.idContrato)" title="Eliminar">🗑️</button>
+                                <a class="btn btn-warning btn-sm" asp-action="Editar" asp-route-id="@item.idContrato">✏️</a>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="confirmarEliminacion(@item.idContrato)">🗑️</button>
                             }
-                        </div>
-                    </td>
-                </tr>
-            }
+                        </td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>
