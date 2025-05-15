@@ -9,63 +9,79 @@
     <h1>Listado de Contratos</h1>
     @if (esAdmin)
     {
-        <a class="btn btn-success mt-3" asp-action="Crear">Crear Contrato</a>
+        <a class="btn btn-success mt-3" asp-action="Crear">📄 Crear Contrato</a>
     }
+</div>
+
+<div class="d-flex justify-content-center mb-4">
+    <form method="get" class="w-100" style="max-width: 700px;">
+        <div class="mb-2">
+            <input type="text" name="q" placeholder="Buscar por inquilino, propietario o dirección..."
+                   class="form-control text-center" value="@Context.Request.Query["q"]" />
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">🔍 Buscar</button>
+        </div>
+    </form>
 </div>
 
 @if (Model != null && Model.Any())
 {
-    <table class="table table-bordered table-striped table-hover">
-        <thead class="table-primary">
-            <tr>
-                <th>@nameof(inmobiliaria_santi.Models.Contrato.idContrato)</th>
-                <th>@nameof(inmobiliaria_santi.Models.Contrato.InquilinoNombre)</th>
-                <th>@nameof(inmobiliaria_santi.Models.Contrato.InmuebleDireccion)</th>
-                <th>@nameof(inmobiliaria_santi.Models.Contrato.PropietarioNombre)</th>
-                <th>@nameof(inmobiliaria_santi.Models.Contrato.fechaInicio)</th>
-                <th>@nameof(inmobiliaria_santi.Models.Contrato.fechaFin)</th>
-                <th>@nameof(inmobiliaria_santi.Models.Contrato.montoRenta)</th>
-                <th>Contrato Rescindido</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.idContrato</td>
-                <td>@item.InquilinoNombre @item.InquilinoApellido</td>
-                <td>@item.InmuebleDireccion</td>
-                <td>@item.PropietarioNombre @item.PropietarioApellido</td>
-                <td>@item.fechaInicio.ToString("dd/MM/yyyy")</td>
-                <td>@item.fechaFin.ToString("dd/MM/yyyy")</td>
-                <td>@String.Format("{0:C}", item.montoRenta)</td>
-                <td>
-                    @if (!item.estado)
-                    {
-                        <span class="badge bg-danger">Rescindido</span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-success">Activo</span>
-                    }
-                </td>
-                <td>
-                    <a class="btn btn-info btn-sm" asp-action="Detalle" asp-route-id="@item.idContrato">👁️ Detalle</a>
-                    @if (esAdmin)
-                    {
-                        <a class="btn btn-warning btn-sm" asp-action="Editar" asp-route-id="@item.idContrato">✏️ Editar</a>
-                        <button type="button" class="btn btn-danger btn-sm" onclick="confirmarEliminacion(@item.idContrato)">🗑️ Eliminar</button>
-                    }
-                </td>
-            </tr>
-        }
-        </tbody>
-    </table>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover shadow-sm align-middle text-center">
+            <thead class="table-primary">
+                <tr>
+                    <th>#</th>
+                    <th>👤 Inquilino</th>
+                    <th>🏠 Inmueble</th>
+                    <th>👥 Propietario</th>
+                    <th>📅 Inicio</th>
+                    <th>📅 Fin</th>
+                    <th>💵 Renta</th>
+                    <th>📌 Estado</th>
+                    <th>⚙️ Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.idContrato</td>
+                    <td>@item.InquilinoNombre @item.InquilinoApellido</td>
+                    <td>@item.InmuebleDireccion</td>
+                    <td>@item.PropietarioNombre @item.PropietarioApellido</td>
+                    <td>@item.fechaInicio.ToString("dd/MM/yyyy")</td>
+                    <td>@item.fechaFin.ToString("dd/MM/yyyy")</td>
+                    <td>$ @item.montoRenta?.ToString("N2")</td>
+                    <td>
+                        @if (!item.estado)
+                        {
+                            <span class="badge bg-danger">Rescindido</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success">Activo</span>
+                        }
+                    </td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <a class="btn btn-info btn-sm" asp-action="Detalle" asp-route-id="@item.idContrato" title="Ver detalle">👁️</a>
+                            @if (esAdmin)
+                            {
+                                <a class="btn btn-warning btn-sm" asp-action="Editar" asp-route-id="@item.idContrato" title="Editar">✏️</a>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="confirmarEliminacion(@item.idContrato)" title="Eliminar">🗑️</button>
+                            }
+                        </div>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
 }
 else
 {
-    <div class="alert alert-info">
+    <div class="alert alert-info text-center">
         No hay contratos registrados aún.
     </div>
 }

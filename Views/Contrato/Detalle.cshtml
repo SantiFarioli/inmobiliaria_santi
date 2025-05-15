@@ -1,78 +1,78 @@
 @model inmobiliaria_santi.Models.Contrato
 
 @{
-    ViewData["Title"] = "Detalle Contrato";
+    ViewData["Title"] = "Detalle de Contrato";
 }
 
-<h2 class="text-center my-4">Detalle de Contrato</h2>
+<h2 class="text-center my-4">Detalle del Contrato</h2>
 
-<div class="card p-4 shadow mx-auto" style="max-width: 800px;">
-    <dl class="row">
-        <dt class="col-sm-4">Propietario</dt>
-        <dd class="col-sm-8">@Model.PropietarioNombre @Model.PropietarioApellido</dd>
+<div class="card shadow mx-auto" style="max-width: 800px;">
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-4">Propietario</dt>
+            <dd class="col-sm-8">@Model.PropietarioNombre @Model.PropietarioApellido</dd>
 
-        <dt class="col-sm-4">Inquilino</dt>
-        <dd class="col-sm-8">@Model.InquilinoNombre @Model.InquilinoApellido</dd>
+            <dt class="col-sm-4">Inquilino</dt>
+            <dd class="col-sm-8">@Model.InquilinoNombre @Model.InquilinoApellido</dd>
 
-        <dt class="col-sm-4">Dirección del Inmueble</dt>
-        <dd class="col-sm-8">@Model.InmuebleDireccion</dd>
+            <dt class="col-sm-4">Dirección del Inmueble</dt>
+            <dd class="col-sm-8">@Model.InmuebleDireccion</dd>
 
-        <dt class="col-sm-4">Fecha de Inicio</dt>
-        <dd class="col-sm-8">@Model.fechaInicio.ToString("dd/MM/yyyy")</dd>
+            <dt class="col-sm-4">Fecha de Inicio</dt>
+            <dd class="col-sm-8">@Model.fechaInicio.ToString("dd/MM/yyyy")</dd>
 
-        <dt class="col-sm-4">Fecha de Fin</dt>
-        <dd class="col-sm-8">@Model.fechaFin.ToString("dd/MM/yyyy")</dd>
+            <dt class="col-sm-4">Fecha de Fin</dt>
+            <dd class="col-sm-8">@Model.fechaFin.ToString("dd/MM/yyyy")</dd>
 
-        <dt class="col-sm-4">Monto de Renta</dt>
-        <dd class="col-sm-8">@((Model.montoRenta.HasValue ? ((IFormattable)Model.montoRenta.Value).ToString("C", System.Globalization.CultureInfo.CurrentCulture) : "N/A"))</dd>
+            <dt class="col-sm-4">Monto de Renta</dt>
+            <dd class="col-sm-8">@Model.montoRenta?.ToString("C")</dd>
 
-        <dt class="col-sm-4">Depósito</dt>
-        <dd class="col-sm-8">@((Model.deposito.HasValue ? ((IFormattable)Model.deposito.Value).ToString("C", System.Globalization.CultureInfo.CurrentCulture) : "N/A"))</dd>
+            <dt class="col-sm-4">Depósito</dt>
+            <dd class="col-sm-8">@Model.deposito?.ToString("C")</dd>
 
-        <dt class="col-sm-4">Comisión</dt>
-        <dd class="col-sm-8">@((Model.comision.HasValue ? ((IFormattable)Model.comision.Value).ToString("C", System.Globalization.CultureInfo.CurrentCulture) : "N/A"))</dd>
+            <dt class="col-sm-4">Comisión</dt>
+            <dd class="col-sm-8">@Model.comision?.ToString("C")</dd>
 
-        <dt class="col-sm-4">Condiciones</dt>
-        <dd class="col-sm-8">@Model.condiciones</dd>
+            <dt class="col-sm-4">Condiciones</dt>
+            <dd class="col-sm-8">@Model.condiciones</dd>
 
-        <dt class="col-sm-4">Estado</dt>
-        <dd class="col-sm-8">
-            @if (Model.estado)
-            {
-                <span class="badge bg-success">Activo</span>
-            }
-            else
-            {
-                <span class="badge bg-danger">Rescindido</span>
-            }
-        </dd>
-
-        <dt class="col-sm-4">Creado por</dt>
-        <dd class="col-sm-8">@Model.usuarioCreacion</dd>
-
-        @if (!Model.estado)
-        {
-            <dt class="col-sm-4">Fecha de Terminación</dt>
-            <dd class="col-sm-8">@Model.fechaTerminacionTemprana?.ToString("dd/MM/yyyy")</dd>
-
-            <dt class="col-sm-4">Multa por Rescisión</dt>
-            <dd class="col-sm-8">@((Model.multaTerminacionTemprana.HasValue ? ((IFormattable)Model.multaTerminacionTemprana.Value).ToString("C", System.Globalization.CultureInfo.CurrentCulture) : "N/A"))</dd>
-
-            <dt class="col-sm-4">Porcentaje Multa</dt>
+            <dt class="col-sm-4">Estado</dt>
             <dd class="col-sm-8">
-                @(Model.porcentajeMulta.HasValue ? (Model.porcentajeMulta.Value * 100).ToString("F2") + "%" : "N/A")
+                @if (Model.estado)
+                {
+                    <span class="badge bg-success">Activo</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">Rescindido</span>
+                }
             </dd>
 
-            <dt class="col-sm-4">Rescindido por</dt>
-            <dd class="col-sm-8">@Model.usuarioRescision</dd>
-        }
-    </dl>
-</div>
+            <dt class="col-sm-4">Creado por</dt>
+            <dd class="col-sm-8">@Model.usuarioCreacion</dd>
 
-<div class="text-center mt-4">
-    @if (Model.estado)
-    {
-        <a asp-action="RescindirContrato" asp-route-id="@Model.idContrato" class="btn btn-danger me-2">Rescindir Contrato</a>
-    }
-    <a asp-action="Index" class="btn btn-secondary">Volver al listado</a>
+            @if (!Model.estado)
+            {
+                <dt class="col-sm-4">Fecha de Terminación</dt>
+                <dd class="col-sm-8">@Model.fechaTerminacionTemprana?.ToString("dd/MM/yyyy")</dd>
+
+                <dt class="col-sm-4">Multa por Rescisión</dt>
+                <dd class="col-sm-8">@Model.multaTerminacionTemprana?.ToString("C")</dd>
+
+                <dt class="col-sm-4">Porcentaje de Multa</dt>
+                <dd class="col-sm-8">@($"{Model.porcentajeMulta * 100:N0}%")</dd>
+
+                <dt class="col-sm-4">Rescindido por</dt>
+                <dd class="col-sm-8">@Model.usuarioRescision</dd>
+            }
+        </dl>
+
+        <div class="text-center mt-4">
+            @if (Model.estado)
+            {
+                <a asp-action="RescindirContrato" asp-route-id="@Model.idContrato" class="btn btn-danger me-2">Rescindir Contrato</a>
+            }
+            <a asp-action="Index" class="btn btn-secondary">🔙 Volver</a>
+        </div>
+    </div>
 </div>

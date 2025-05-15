@@ -1,55 +1,85 @@
 @model inmobiliaria_santi.Models.Contrato
 
-<form asp-action="Editar">
-    @Html.HiddenFor(m => m.idContrato)
-    
-    <div class="form-group">
-        <label for="idInmueble">Inmueble</label>
-        <select class="form-control" asp-for="idInmueble" asp-items="ViewBag.Inmuebles"></select>
-    </div>
-    
-    <div class="form-group">
-        <label for="idInquilino">Inquilino</label>
-        <select class="form-control" asp-for="idInquilino" asp-items="ViewBag.Inquilinos"></select>
-    </div>
+@{
+    ViewData["Title"] = "Editar Contrato";
+}
 
-    <div class="form-group">
-        <label for="fechaInicio">Fecha de Inicio</label>
-        <input type="date" class="form-control" asp-for="fechaInicio" />
+<div class="text-center mb-4">
+    <h1>Editar Contrato</h1>
+</div>
+
+<div class="d-flex justify-content-center">
+    <div class="card shadow-sm" style="max-width: 800px; width: 100%;">
+        <div class="card-body">
+            <form asp-action="Editar" method="post">
+                @Html.HiddenFor(m => m.idContrato)
+                <div asp-validation-summary="ModelOnly" class="text-danger text-center"></div>
+
+                <div class="mb-3">
+                    <label asp-for="idInmueble" class="form-label">Inmueble</label>
+                    <select asp-for="idInmueble" asp-items="ViewBag.Inmuebles" class="form-select"></select>
+                    <span asp-validation-for="idInmueble" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="idInquilino" class="form-label">Inquilino</label>
+                    <select asp-for="idInquilino" asp-items="ViewBag.Inquilinos" class="form-select"></select>
+                    <span asp-validation-for="idInquilino" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="fechaInicio" class="form-label">Fecha de Inicio</label>
+                    <input asp-for="fechaInicio" type="date" class="form-control" />
+                    <span asp-validation-for="fechaInicio" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="fechaFin" class="form-label">Fecha de Fin</label>
+                    <input asp-for="fechaFin" type="date" class="form-control" />
+                    <span asp-validation-for="fechaFin" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="montoRenta" class="form-label">Monto de Renta</label>
+                    <input asp-for="montoRenta" type="number" class="form-control" />
+                    <span asp-validation-for="montoRenta" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="deposito" class="form-label">Depósito</label>
+                    <input asp-for="deposito" type="number" class="form-control" />
+                    <span asp-validation-for="deposito" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="comision" class="form-label">Comisión</label>
+                    <input asp-for="comision" type="number" class="form-control" />
+                    <span asp-validation-for="comision" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="condiciones" class="form-label">Condiciones</label>
+                    <textarea asp-for="condiciones" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="condiciones" class="text-danger"></span>
+                </div>
+
+                <!-- Campos ocultos (rescisión, estado, usuario) -->
+                @Html.HiddenFor(m => m.multaTerminacionTemprana)
+                @Html.HiddenFor(m => m.fechaTerminacionTemprana)
+                @Html.HiddenFor(m => m.porcentajeMulta)
+                @Html.HiddenFor(m => m.usuarioRescision)
+                @Html.HiddenFor(m => m.usuarioCreacion)
+                @Html.HiddenFor(m => m.estado)
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary me-2">💾 Guardar Cambios</button>
+                    <a asp-action="Index" class="btn btn-secondary">🔙 Volver</a>
+                </div>
+            </form>
+        </div>
     </div>
+</div>
 
-    <div class="form-group">
-        <label for="fechaFin">Fecha de Fin</label>
-        <input type="date" class="form-control" asp-for="fechaFin" />
-    </div>
-
-    <div class="form-group">
-        <label for="montoRenta">Monto de Renta</label>
-        <input type="number" class="form-control" asp-for="montoRenta" />
-    </div>
-
-    <div class="form-group">
-        <label for="deposito">Depósito</label>
-        <input type="text" class="form-control" asp-for="deposito" />
-    </div>
-
-    <div class="form-group">
-        <label for="comision">Comisión</label>
-        <input type="text" class="form-control" asp-for="comision" />
-    </div>
-
-    <div class="form-group">
-        <label for="condiciones">Condiciones</label>
-        <textarea class="form-control" asp-for="condiciones"></textarea>
-    </div>
-
-    <!-- Ocultando los campos multa y fecha de terminación temprana -->
-    @Html.HiddenFor(m => m.multaTerminacionTemprana)
-    @Html.HiddenFor(m => m.fechaTerminacionTemprana)
-    @Html.HiddenFor(m => m.porcentajeMulta)
-    @Html.HiddenFor(m => m.usuarioRescision)
-    @Html.HiddenFor(m => m.usuarioCreacion)
-    @Html.HiddenFor(m => m.estado)
-
-    <button type="submit" class="btn btn-primary">Actualizar Contrato</button>
-</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

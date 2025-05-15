@@ -1,35 +1,49 @@
 @model inmobiliaria_santi.Models.Contrato
 
+@{
+    ViewData["Title"] = "Rescindir Contrato";
+}
+
 <h2 class="text-center my-4">Rescindir Contrato</h2>
 
-<form asp-action="RescindirContrato" method="post">
-    @Html.AntiForgeryToken()
-    <input type="hidden" asp-for="idContrato" />
-    <input type="hidden" asp-for="idInmueble" />
-    <input type="hidden" asp-for="idInquilino" />
-    <input type="hidden" asp-for="fechaInicio" />
-    <input type="hidden" asp-for="fechaFin" />
-    <input type="hidden" asp-for="montoRenta" />
-    <input type="hidden" asp-for="deposito" />
-    <input type="hidden" asp-for="comision" />
-    <input type="hidden" asp-for="condiciones" />
-    <input type="hidden" asp-for="usuarioCreacion" />
-    <input type="hidden" asp-for="estado" />
+<div class="d-flex justify-content-center">
+    <div class="card shadow-sm" style="max-width: 600px; width: 100%;">
+        <div class="card-body">
+            <form asp-action="RescindirContrato" method="post">
+                @Html.AntiForgeryToken()
 
-    <div class="form-group">
-        <label asp-for="multaTerminacionTemprana">Multa por Terminación Temprana</label>
-        <input asp-for="multaTerminacionTemprana" class="form-control" readonly />
+                @Html.HiddenFor(m => m.idContrato)
+                @Html.HiddenFor(m => m.idInmueble)
+                @Html.HiddenFor(m => m.idInquilino)
+                @Html.HiddenFor(m => m.fechaInicio)
+                @Html.HiddenFor(m => m.fechaFin)
+                @Html.HiddenFor(m => m.montoRenta)
+                @Html.HiddenFor(m => m.deposito)
+                @Html.HiddenFor(m => m.comision)
+                @Html.HiddenFor(m => m.condiciones)
+                @Html.HiddenFor(m => m.usuarioCreacion)
+                @Html.HiddenFor(m => m.estado)
+
+                <div class="mb-3">
+                    <label asp-for="multaTerminacionTemprana" class="form-label">Multa por Rescisión</label>
+                    <input asp-for="multaTerminacionTemprana" class="form-control" readonly />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="fechaTerminacionTemprana" class="form-label">Fecha de Terminación</label>
+                    <input asp-for="fechaTerminacionTemprana" class="form-control" readonly />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="porcentajeMulta" class="form-label">Porcentaje de Multa</label>
+                    <input asp-for="porcentajeMulta" class="form-control" readonly />
+                </div>
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-danger me-2">✅ Confirmar Rescisión</button>
+                    <a asp-action="Detalle" asp-route-id="@Model.idContrato" class="btn btn-secondary">🔙 Cancelar</a>
+                </div>
+            </form>
+        </div>
     </div>
-
-    <div class="form-group">
-        <label asp-for="fechaTerminacionTemprana">Fecha de Terminación</label>
-        <input asp-for="fechaTerminacionTemprana" class="form-control" readonly />
-    </div>
-
-    <div class="form-group">
-        <label asp-for="porcentajeMulta">Porcentaje de Multa</label>
-        <input asp-for="porcentajeMulta" class="form-control" readonly />
-    </div>
-
-    <button type="submit" class="btn btn-danger">Confirmar Rescisión</button>
-</form>
+</div>
