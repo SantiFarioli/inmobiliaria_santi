@@ -1,6 +1,7 @@
 using inmobiliaria_santi.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace inmobiliaria_santi.Controllers
 {
@@ -13,12 +14,24 @@ namespace inmobiliaria_santi.Controllers
         {
             _repositorio = repositorio;
         }
-       
+
         // GET: Pago
         [Authorize(Roles = "Administrador,Empleado")]
-        public IActionResult Index()
+        public IActionResult Index(string q)
         {
             var pagos = _repositorio.ObtenerTodos();
+
+            if (!string.IsNullOrEmpty(q))
+            {
+                q = q.ToLower();
+                pagos = pagos.Where(p =>
+                    (p.ContratoResumen != null && p.ContratoResumen.ToLower().Contains(q)) ||
+                    p.detalle?.ToLower().Contains(q) == true ||
+                    p.importe.ToString().Contains(q) ||
+                    p.fechaPago.ToString("dd/MM/yyyy").Contains(q)
+                ).ToList();
+            }
+
             return View(pagos);
         }
 
@@ -27,8 +40,17 @@ namespace inmobiliaria_santi.Controllers
         public IActionResult Crear()
         {
             var repoContrato = new RepositorioContrato();
-	        ViewBag.Contratos = repoContrato.ObtenerContratosConResumen();
-            return View();
+            var contratos = repoContrato.ObtenerContratosConResumen();
+
+            if (contratos == null || !contratos.Any())
+            {
+                TempData["Mensaje"] = "⚠️ No hay contratos disponibles para registrar pagos.";
+                TempData["Tipo"] = "warning";
+                return RedirectToAction(nameof(Index));
+            }
+
+            ViewBag.Contratos = new SelectList(contratos, nameof(Contrato.idContrato), nameof(Contrato.ContratoResumen));
+            return View(new Pago());
         }
 
         // POST: Pago/Crear
@@ -37,8 +59,21 @@ namespace inmobiliaria_santi.Controllers
         [Authorize(Roles = "Administrador")]
         public IActionResult Crear(Pago pago)
         {
+            var repoContrato = new RepositorioContrato();
+            ViewBag.Contratos = new SelectList(repoContrato.ObtenerContratosConResumen(), nameof(Contrato.idContrato), nameof(Contrato.ContratoResumen)); 
+
             try
             {
+                // 💡 Setear nroPago ANTES de validar
+                pago.nroPago = _repositorio.ObtenerUltimoNumeroPago(pago.idContrato) + 1;
+
+                if (_repositorio.ExistePago(0, pago.idContrato, pago.nroPago))
+                {
+                    TempData["Mensaje"] = "Ya existe un pago con ese número para este contrato.";
+                    TempData["Tipo"] = "warning";
+                    return View(pago); 
+                }
+
                 if (ModelState.IsValid)
                 {
                     pago.usuarioCreacion = User.Identity?.Name ?? "sistema";
@@ -47,6 +82,7 @@ namespace inmobiliaria_santi.Controllers
                     TempData["Tipo"] = "success";
                     return RedirectToAction(nameof(Index));
                 }
+
                 TempData["Mensaje"] = "Error de validación.";
                 TempData["Tipo"] = "warning";
             }
@@ -55,7 +91,8 @@ namespace inmobiliaria_santi.Controllers
                 TempData["Mensaje"] = "Error inesperado: " + ex.Message;
                 TempData["Tipo"] = "error";
             }
-            return View(pago);
+
+            return View(pago); 
         }
 
         // GET: Pago/Editar/5
@@ -76,6 +113,13 @@ namespace inmobiliaria_santi.Controllers
         {
             try
             {
+                if (_repositorio.ExistePago(pago.idPago, pago.idContrato, pago.nroPago))
+                {
+                    TempData["Mensaje"] = "Ya existe un pago con ese número para este contrato.";
+                    TempData["Tipo"] = "warning";
+                    return View(pago);
+                }
+
                 if (ModelState.IsValid)
                 {
                     _repositorio.ActualizarPago(pago);
@@ -83,6 +127,7 @@ namespace inmobiliaria_santi.Controllers
                     TempData["Tipo"] = "success";
                     return RedirectToAction(nameof(Index));
                 }
+
                 TempData["Mensaje"] = "Error en validación.";
                 TempData["Tipo"] = "warning";
             }
@@ -91,6 +136,7 @@ namespace inmobiliaria_santi.Controllers
                 TempData["Mensaje"] = "Error inesperado: " + ex.Message;
                 TempData["Tipo"] = "error";
             }
+
             return View(pago);
         }
 
@@ -112,12 +158,12 @@ namespace inmobiliaria_santi.Controllers
             {
                 var usuario = User.Identity?.Name ?? "sistema";
                 _repositorio.EliminarPago(id, usuario);
-                TempData["Mensaje"] = "Pago eliminado correctamente.";
+                TempData["Mensaje"] = "Pago Anulado correctamente.";
                 TempData["Tipo"] = "success";
             }
             catch (Exception ex)
             {
-                TempData["Mensaje"] = "Error al eliminar: " + ex.Message;
+                TempData["Mensaje"] = "Error al Anular: " + ex.Message;
                 TempData["Tipo"] = "error";
             }
             return RedirectToAction(nameof(Index));

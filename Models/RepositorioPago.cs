@@ -19,8 +19,7 @@ public class RepositorioPago
                         INNER JOIN contrato c ON p.idContrato = c.idContrato
                         INNER JOIN inmueble i ON c.idInmueble = i.idInmueble
                         INNER JOIN inquilino inq ON c.idInquilino = inq.idInquilino
-                        WHERE p.{nameof(Pago.estado)} = 1
-                        ORDER BY p.fechaPago DESC;"; 
+                        ORDER BY p.fechaPago DESC;";
             using (var comando = new MySqlCommand(sql, conexion))
             {
                 conexion.Open();
@@ -163,4 +162,45 @@ public class RepositorioPago
         }
         return filasAfectadas;
     }
+
+    public bool ExistePago(int idContrato, int nroPago, int idPago)
+    {
+        using (var conexion = new MySqlConnection(connectionString))
+        {
+            var sql = $@"SELECT COUNT(*) FROM pago
+                        WHERE {nameof(Pago.idContrato)} = @{nameof(idContrato)} 
+                        AND {nameof(Pago.nroPago)} = @{nameof(nroPago)}
+                        AND {nameof(Pago.estado)} = 1";
+            using (var comando = new MySqlCommand(sql, conexion))
+            {
+                comando.Parameters.AddWithValue($"@{nameof(idContrato)}", idContrato);
+                comando.Parameters.AddWithValue($"@{nameof(nroPago)}", nroPago);
+                conexion.Open();
+                var resultado = Convert.ToInt32(comando.ExecuteScalar());
+                return resultado > 0;
+            }
+        }
+    }
+    
+    public int ObtenerUltimoNumeroPago(int idContrato)
+    {
+        int ultimo = 0;
+        using (var conexion = new MySqlConnection(connectionString))
+        {
+            var sql = $@"SELECT IFNULL(MAX({nameof(Pago.nroPago)}), 0)
+                        FROM pago
+                        WHERE {nameof(Pago.idContrato)} = @{nameof(idContrato)}";
+
+            using (var comando = new MySqlCommand(sql, conexion))
+            {
+                comando.Parameters.AddWithValue($"@{nameof(idContrato)}", idContrato);
+                conexion.Open();
+                var resultado = comando.ExecuteScalar();
+                if (resultado != null && resultado != DBNull.Value)
+                    ultimo = Convert.ToInt32(resultado);
+            }
+        }
+        return ultimo;
+    }
+
 }

@@ -1,51 +1,67 @@
 @model inmobiliaria_santi.Models.Pago
+
 @{
     ViewData["Title"] = "Registrar Pago";
 }
 
-<h2 class="text-center my-4">Registrar nuevo pago</h2>
+<h2 class="text-center my-4">🧾 Registrar nuevo pago</h2>
 
 <div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card shadow p-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm p-4">
             <form asp-action="Crear" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger text-center"></div>
+
+                <!-- Contrato -->
                 <div class="form-group mb-3">
-                    <label for="idContrato" class="form-label">Contrato</label>
-                    <select class="form-select" asp-for="idContrato" asp-items="@(new SelectList(ViewBag.Contratos, "idContrato", "ContratoResumen"))" required>
+                    <label for="idContrato" class="form-label"> Contrato</label>
+                    <select asp-for="idContrato" class="form-select" asp-items="ViewBag.Contratos" required>
                         <option value="">Seleccione un contrato</option>
                     </select>
                     <span asp-validation-for="idContrato" class="text-danger"></span>
                 </div>
 
+                <!-- Fecha de Pago -->
                 <div class="form-group mb-3">
-                    <label asp-for="nroPago" class="form-label">Número de Pago</label>
-                    <input asp-for="nroPago" class="form-control" required />
-                    <span asp-validation-for="nroPago" class="text-danger"></span>
-                </div>
-
-                <div class="form-group mb-3">
-                    <label asp-for="fechaPago" class="form-label">Fecha de Pago</label>
+                    <label asp-for="fechaPago" class="form-label"> Fecha de Pago</label>
                     <input asp-for="fechaPago" class="form-control" type="date" required />
                     <span asp-validation-for="fechaPago" class="text-danger"></span>
                 </div>
 
+                <!-- Importe -->
                 <div class="form-group mb-3">
-                    <label asp-for="importe" class="form-label">Importe</label>
+                    <label asp-for="importe" class="form-label"> Importe</label>
                     <input asp-for="importe" class="form-control" step="0.01" required />
                     <span asp-validation-for="importe" class="text-danger"></span>
                 </div>
 
+                <!-- Detalle -->
                 <div class="form-group mb-3">
-                    <label asp-for="detalle" class="form-label">Detalle</label>
-                    <textarea asp-for="detalle" class="form-control"></textarea>
+                    <label asp-for="detalle" class="form-label"> Detalle</label>
+                    <textarea asp-for="detalle" class="form-control" rows="3" placeholder="Ej: Alquiler mes de mayo..."></textarea>
                     <span asp-validation-for="detalle" class="text-danger"></span>
                 </div>
 
-                <div class="text-center">
-                    <button type="submit" class="btn btn-primary">Registrar</button>
-                    <a asp-action="Index" class="btn btn-secondary ms-2">Cancelar</a>
+                <!-- Campos ocultos -->
+                @Html.HiddenFor(m => m.usuarioCreacion)
+                @Html.HiddenFor(m => m.estado)
+                @Html.HiddenFor(m => m.usuarioEliminacion)
+                @Html.HiddenFor(m => m.usuarioAnulacion)
+
+                <!-- Botones -->
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary me-2">
+                        💾 Registrar
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        ↩️ Cancelar
+                    </a>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

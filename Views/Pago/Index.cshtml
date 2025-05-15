@@ -1,63 +1,84 @@
 @model IEnumerable<inmobiliaria_santi.Models.Pago>
 @using System.Security.Claims
+
 @{
-    ViewData["Title"] = "Pagos registrados";
+    ViewData["Title"] = "Listado de Pagos";
     var esAdmin = User.IsInRole("Administrador");
 }
 
-<h2 class="text-center mb-4">Pagos registrados</h2>
+<div class="text-center mb-4">
+    <h1>Listado de Pagos</h1>
+    @if (esAdmin)
+    {
+        <a class="btn btn-success mt-3" asp-action="Crear">Registrar nuevo pago</a>
+    }
+</div>
 
-@if (esAdmin)
+<div class="row justify-content-center mb-3">
+    <div class="col-md-6">
+        <form method="get" asp-action="Index" class="input-group">
+            <input type="text" name="q" class="form-control" placeholder="Buscar por contrato, detalle o importe..." />
+            <button type="submit" class="btn btn-primary">🔍 Buscar</button>
+        </form>
+    </div>
+</div>
+
+@if (Model != null && Model.Any())
 {
-    <div class="text-center mb-3">
-        <a asp-action="Crear" class="btn btn-success">Registrar nuevo pago</a>
+    <div class="table-responsive mx-auto" style="max-width: 1200px;">
+        <table class="table table-bordered table-striped table-hover text-center">
+            <thead class="table-primary">
+                <tr>
+                    <th>Contrato</th>
+                    <th>Fecha</th>
+                    <th>Importe</th>
+                    <th>Nº Pago</th>
+                    <th>Detalle</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Select((pago, index) => new { pago, index }))
+                {
+                    <tr>
+                        <td>@item.pago.ContratoResumen</td>
+                        <td>@item.pago.fechaPago.ToString("dd/MM/yyyy")</td>
+                        <td>@item.pago.importe.ToString("C")</td>
+                        <td>@item.pago.nroPago</td>
+                        <td>@item.pago.detalle</td>
+                        <td>
+                            @if (item.pago.estado)
+                            {
+                                <span class="badge bg-success">Activo</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Anulado</span>
+                            }
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a asp-action="Detalle" asp-route-id="@item.pago.idPago" class="btn btn-info btn-sm">👁️</a>
+                                @if (esAdmin)
+                                {
+                                    @if (item.pago.estado)
+                                    {
+                                        <a asp-action="Editar" asp-route-id="@item.pago.idPago" class="btn btn-warning btn-sm">✏️</a>
+                                        <a asp-action="EliminarConfirmado" asp-route-id="@item.pago.idPago" class="btn btn-danger btn-sm">❌</a>
+                                    }
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
 }
-
-<table class="table table-bordered table-hover table-striped table-sm text-center">
-    <thead class="table-primary">
-        <tr>
-            <th>Contrato</th>
-            <th>Fecha</th>
-            <th>Importe</th>
-            <th>Nro Pago</th>
-            <th>Detalle</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (Model != null && Model.Any())
-        {
-            foreach (var item in Model)
-            {
-                <tr>
-                    <td>@item.ContratoResumen</td> 
-                    <td>@item.fechaPago.ToShortDateString()</td>
-                    <td>@item.importe.ToString("C")</td>
-                    <td>@item.nroPago</td>
-                    <td>@item.detalle</td>
-                    <td>
-                        <a asp-action="Detalle" asp-route-id="@item.idPago" class="btn btn-info btn-sm">
-                            👁️ Detalle
-                        </a>
-                        @if (esAdmin)
-                        {
-                            <a asp-action="Editar" asp-route-id="@item.idPago" class="btn btn-warning btn-sm">
-                                ✏️ Editar
-                            </a>
-                            <a asp-action="Eliminar" asp-route-id="@item.idPago" class="btn btn-danger btn-sm">
-                                🗑️ Eliminar
-                            </a>
-                        }
-                    </td>
-                </tr>
-            }
-        }
-        else
-        {
-            <tr>
-                <td colspan="6">No hay pagos registrados.</td>
-            </tr>
-        }
-    </tbody>
-</table>
+else
+{
+    <div class="alert alert-info text-center">
+        No hay pagos registrados aún.
+    </div>
+}
