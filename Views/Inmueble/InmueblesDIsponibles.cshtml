@@ -1,0 +1,52 @@
+@model IEnumerable<inmobiliaria_santi.Models.Inmueble>
+@{
+    ViewData["Title"] = "Inmuebles Disponibles";
+}
+
+<h2 class="text-center my-4">🏘️ Inmuebles Disponibles</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info text-center">
+        No hay inmuebles disponibles actualmente.
+    </div>
+}
+else
+{
+    <table class="table table-bordered table-hover table-striped shadow-sm mx-auto" style="max-width: 95%;">
+        <thead class="table-primary text-center">
+            <tr>
+                <th>Dirección</th>
+                <th>Uso</th>
+                <th>Ambientes</th>
+                <th>Valor</th>
+                <th>Propietario</th>
+                <th>Tipo</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr class="align-middle text-center">
+                    <td>@item.direccion</td>
+                    <td>@item.uso</td>
+                    <td>@item.cantAmbiente</td>
+                    <td>$@item.valor</td>
+                    <td>@item.PropietarioNombre @item.PropietarioApellido</td>
+                    <td>@item.TipoNombre</td>
+                    <td>
+                        <a asp-controller="Contrato" asp-action="Crear" asp-route-idInmueble="@item.idInmueble"
+                           class="btn btn-success btn-sm">
+                            📝 Crear Contrato
+                        </a>
+                        <a asp-action="Detalle" asp-route-id="@item.idInmueble"
+                           class="btn btn-info btn-sm ms-1">
+                            👁️ Ver Detalle
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

@@ -144,6 +144,58 @@ namespace inmobiliaria_santi.Models
             }
         }
 
+        public List<Inmueble> ObtenerDisponibles()
+        {
+            var lista = new List<Inmueble>();
+            using var conexion = new MySqlConnection(connectionString);
+            var sql = $@"
+                SELECT 
+                    i.{nameof(Inmueble.idInmueble)},
+                    i.{nameof(Inmueble.idPropietario)},
+                    i.{nameof(Inmueble.idTipoInmueble)},
+                    i.{nameof(Inmueble.direccion)},
+                    i.{nameof(Inmueble.uso)},
+                    i.{nameof(Inmueble.cantAmbiente)},
+                    i.{nameof(Inmueble.valor)},
+                    i.{nameof(Inmueble.disponible)},
+                    i.{nameof(Inmueble.estado)},
+                    p.{nameof(Propietario.nombre)} AS {nameof(Inmueble.PropietarioNombre)},
+                    p.{nameof(Propietario.apellido)} AS {nameof(Inmueble.PropietarioApellido)},
+                    p.{nameof(Propietario.dni)} AS {nameof(Inmueble.PropietarioDni)},
+                    t.{nameof(TipoInmueble.nombre)} AS {nameof(Inmueble.TipoNombre)}
+                FROM inmueble i
+                JOIN propietario p ON i.{nameof(Inmueble.idPropietario)} = p.{nameof(Propietario.idPropietario)}
+                JOIN tipoinmueble t ON i.{nameof(Inmueble.idTipoInmueble)} = t.{nameof(TipoInmueble.idTipoInmueble)}
+                WHERE i.{nameof(Inmueble.estado)} = 1 AND i.{nameof(Inmueble.disponible)} = 1
+                ORDER BY i.{nameof(Inmueble.direccion)} ASC;";
+
+            using var comando = new MySqlCommand(sql, conexion);
+            conexion.Open();
+            using var reader = comando.ExecuteReader();
+            while (reader.Read())
+            {
+                lista.Add(new Inmueble
+                {
+                    idInmueble = reader.GetInt32(nameof(Inmueble.idInmueble)),
+                    idPropietario = reader.GetInt32(nameof(Inmueble.idPropietario)),
+                    idTipoInmueble = reader.GetInt32(nameof(Inmueble.idTipoInmueble)),
+                    direccion = reader[nameof(Inmueble.direccion)].ToString() ?? "",
+                    uso = reader[nameof(Inmueble.uso)].ToString() ?? "",
+                    cantAmbiente = reader.GetInt32(nameof(Inmueble.cantAmbiente)),
+                    valor = reader.GetDecimal(nameof(Inmueble.valor)),
+                    disponible = reader.GetBoolean(nameof(Inmueble.disponible)),
+                    estado = reader.GetBoolean(nameof(Inmueble.estado)),
+                    PropietarioNombre = reader[nameof(Inmueble.PropietarioNombre)].ToString(),
+                    PropietarioApellido = reader[nameof(Inmueble.PropietarioApellido)].ToString(),
+                    PropietarioDni = reader[nameof(Inmueble.PropietarioDni)].ToString(),
+                    TipoNombre = reader[nameof(Inmueble.TipoNombre)].ToString()
+                });
+            }
+            return lista;
+        }
+
+
+
 
         public int ActualizarInmueble(Inmueble inmueble)
         {

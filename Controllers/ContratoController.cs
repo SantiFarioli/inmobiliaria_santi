@@ -23,7 +23,7 @@ namespace inmobiliaria_santi.Controllers
 
         // GET: Contrato
         [Authorize(Roles = "Administrador,Empleado")]
-       public IActionResult Index(string q)
+        public IActionResult Index(string q)
         {
             var contratos = _repositorioContrato.ObtenerTodos();
 
@@ -39,36 +39,41 @@ namespace inmobiliaria_santi.Controllers
                 ).ToList();
             }
 
+            ViewBag.HayDisponibles = _repositorioInmueble.ObtenerDisponibles().Any();
             return View(contratos);
         }
 
         // GET: Contrato/Crear
         [Authorize(Roles = "Administrador")]
-        public IActionResult Crear()
+        public IActionResult Crear(int? idInmueble)
         {
-            // Mostrar inquilinos con su nombre completo y DNI
             ViewBag.Inquilinos = new SelectList(
-                _repositorioInquilino.ObtenerTodos()
-                .Select(i => new { 
-                    i.idInquilino, 
-                    NombreCompleto = i.nombre + " " + i.apellido + " - DNI: " + i.dni 
-                }), 
+                _repositorioInquilino.ObtenerTodos().Select(i => new
+                {
+                    i.idInquilino,
+                    NombreCompleto = i.nombre + " " + i.apellido + " - DNI: " + i.dni
+                }),
                 "idInquilino", "NombreCompleto");
 
-            // Mostrar inmuebles con su dirección
             ViewBag.Inmuebles = new SelectList(
-                _repositorioInmueble.ObtenerTodos()
-                .Select(i => new { 
-                    i.idInmueble, 
-                    Direccion = i.direccion + " - " + i.uso 
-                }), 
-                "idInmueble", "Direccion");
+                _repositorioInmueble.ObtenerTodos().Select(i => new
+                {
+                    i.idInmueble,
+                    Direccion = i.direccion + " - " + i.uso
+                }),
+                "idInmueble", "Direccion",
+                idInmueble // ← Selecciona el inmueble si viene por parámetro
+            );
 
-            return View( new Contrato{ estado = true } ); 
+            return View(new Contrato
+            {
+                idInmueble = idInmueble ?? 0,
+                estado = true
+            });
         }
 
         // POST: Contrato/Crear
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrador")]
@@ -84,14 +89,16 @@ namespace inmobiliaria_santi.Controllers
 
                     // Recargar dropdowns
                     ViewBag.Inquilinos = new SelectList(
-                        _repositorioInquilino.ObtenerTodos().Select(i => new {
+                        _repositorioInquilino.ObtenerTodos().Select(i => new
+                        {
                             i.idInquilino,
                             NombreCompleto = i.nombre + " " + i.apellido + " - DNI: " + i.dni
                         }),
                         "idInquilino", "NombreCompleto", contrato.idInquilino);
 
                     ViewBag.Inmuebles = new SelectList(
-                        _repositorioInmueble.ObtenerTodos().Select(i => new {
+                        _repositorioInmueble.ObtenerTodos().Select(i => new
+                        {
                             i.idInmueble,
                             Direccion = i.direccion + " - " + i.uso
                         }),
@@ -119,23 +126,25 @@ namespace inmobiliaria_santi.Controllers
                 TempData["Tipo"] = "error";
             }
 
-    // Recargar dropdowns si hubo error
-    ViewBag.Inquilinos = new SelectList(
-        _repositorioInquilino.ObtenerTodos().Select(i => new {
-            i.idInquilino,
-            NombreCompleto = i.nombre + " " + i.apellido + " - DNI: " + i.dni
-        }),
-        "idInquilino", "NombreCompleto", contrato.idInquilino);
+            // Recargar dropdowns si hubo error
+            ViewBag.Inquilinos = new SelectList(
+                _repositorioInquilino.ObtenerTodos().Select(i => new
+                {
+                    i.idInquilino,
+                    NombreCompleto = i.nombre + " " + i.apellido + " - DNI: " + i.dni
+                }),
+                "idInquilino", "NombreCompleto", contrato.idInquilino);
 
-    ViewBag.Inmuebles = new SelectList(
-        _repositorioInmueble.ObtenerTodos().Select(i => new {
-            i.idInmueble,
-            Direccion = i.direccion + " - " + i.uso
-        }),
-        "idInmueble", "Direccion", contrato.idInmueble);
+            ViewBag.Inmuebles = new SelectList(
+                _repositorioInmueble.ObtenerTodos().Select(i => new
+                {
+                    i.idInmueble,
+                    Direccion = i.direccion + " - " + i.uso
+                }),
+                "idInmueble", "Direccion", contrato.idInmueble);
 
-    return View(contrato);
-}
+            return View(contrato);
+        }
 
 
         // GET: Contrato/Editar/5
@@ -151,19 +160,21 @@ namespace inmobiliaria_santi.Controllers
             // Mostrar inquilinos con su nombre completo y DNI
             ViewBag.Inquilinos = new SelectList(
                 _repositorioInquilino.ObtenerTodos()
-                .Select(i => new { 
-                    i.idInquilino, 
-                    NombreCompleto = i.nombre + " " + i.apellido + " - DNI: " + i.dni 
-                }), 
+                .Select(i => new
+                {
+                    i.idInquilino,
+                    NombreCompleto = i.nombre + " " + i.apellido + " - DNI: " + i.dni
+                }),
                 "idInquilino", "NombreCompleto", contrato.idInquilino);
 
             // Mostrar inmuebles con su dirección
             ViewBag.Inmuebles = new SelectList(
                 _repositorioInmueble.ObtenerTodos()
-                .Select(i => new { 
-                    i.idInmueble, 
-                    Direccion = i.direccion + " - " + i.uso 
-                }), 
+                .Select(i => new
+                {
+                    i.idInmueble,
+                    Direccion = i.direccion + " - " + i.uso
+                }),
                 "idInmueble", "Direccion", contrato.idInmueble);
 
             return View(contrato);
@@ -192,14 +203,16 @@ namespace inmobiliaria_santi.Controllers
 
                         // Recargar dropdowns
                         ViewBag.Inquilinos = new SelectList(
-                            _repositorioInquilino.ObtenerTodos().Select(i => new {
+                            _repositorioInquilino.ObtenerTodos().Select(i => new
+                            {
                                 i.idInquilino,
                                 NombreCompleto = i.nombre + " " + i.apellido + " - DNI: " + i.dni
                             }),
                             "idInquilino", "NombreCompleto", contrato.idInquilino);
 
                         ViewBag.Inmuebles = new SelectList(
-                            _repositorioInmueble.ObtenerTodos().Select(i => new {
+                            _repositorioInmueble.ObtenerTodos().Select(i => new
+                            {
                                 i.idInmueble,
                                 Direccion = i.direccion + " - " + i.uso
                             }),
@@ -228,14 +241,16 @@ namespace inmobiliaria_santi.Controllers
 
             // Recargar dropdowns en caso de error
             ViewBag.Inquilinos = new SelectList(
-                _repositorioInquilino.ObtenerTodos().Select(i => new {
+                _repositorioInquilino.ObtenerTodos().Select(i => new
+                {
                     i.idInquilino,
                     NombreCompleto = i.nombre + " " + i.apellido + " - DNI: " + i.dni
                 }),
                 "idInquilino", "NombreCompleto", contrato.idInquilino);
 
             ViewBag.Inmuebles = new SelectList(
-                _repositorioInmueble.ObtenerTodos().Select(i => new {
+                _repositorioInmueble.ObtenerTodos().Select(i => new
+                {
                     i.idInmueble,
                     Direccion = i.direccion + " - " + i.uso
                 }),
@@ -252,7 +267,7 @@ namespace inmobiliaria_santi.Controllers
             var contrato = _repositorioContrato.ObtenerPorId(id);
             if (contrato == null)
             {
-             return NotFound();
+                return NotFound();
             }
 
             ViewBag.PuedeRescindir = contrato.estado == true;
@@ -321,15 +336,15 @@ namespace inmobiliaria_santi.Controllers
                     if (contratoExistente == null)
                     {
                         return NotFound();
-                    }   
-                                      
+                    }
+
                     // Marcar el contrato como rescindido en lugar de eliminarlo
                     contratoExistente.estado = false; // Suponiendo que el estado 'false' significa rescindido
                     contratoExistente.fechaTerminacionTemprana = DateTime.Now; // Fecha de rescisión
                     contratoExistente.multaTerminacionTemprana = contrato.multaTerminacionTemprana; // Multa calculada
                     contratoExistente.porcentajeMulta = contrato.porcentajeMulta; // Porcentaje de multa calculado
                     contratoExistente.usuarioRescision = User.Identity?.Name ?? "sistema";
-                    
+
                     _repositorioContrato.ActualizarContrato(contratoExistente);
 
                     TempData["Mensaje"] = "Contrato rescindido correctamente con la multa aplicada";
@@ -350,5 +365,19 @@ namespace inmobiliaria_santi.Controllers
             return View(contrato);
         }
 
+        // GET: Contrato/ActivosPorInquilino/5
+        [Authorize(Roles = "Administrador,Empleado")]
+        public IActionResult ActivosPorInquilino(int idInquilino)
+        {
+            var contratos = _repositorioContrato.ObtenerContratosActivosPorInquilino(idInquilino);
+            if (!contratos.Any())
+            {
+                TempData["Mensaje"] = "Este inquilino no tiene contratos activos.";
+                TempData["Tipo"] = "info";
+            }
+
+            ViewBag.Inquilino = _repositorioInquilino.ObtenerPorId(idInquilino);
+            return View("ContratosActivosPorInquilino", contratos); // nombre de la vista .cshtml
+        }
     }
 }

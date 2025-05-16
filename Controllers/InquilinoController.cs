@@ -143,5 +143,24 @@ namespace inmobiliaria_santi.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
+
+        // GET: Inquilino/ContratosActivos/5
+        [Authorize(Roles = "Administrador,Empleado")]
+        public IActionResult ContratosActivos(int id)
+        {
+            var inquilino = _repositorio.ObtenerPorId(id);
+            if (inquilino == null)
+            {
+                TempData["Mensaje"] = "Inquilino no encontrado.";
+                TempData["Tipo"] = "warning";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var contratos = new RepositorioContrato().ObtenerContratosActivosPorInquilino(id);
+
+            ViewBag.InquilinoNombre = $"{inquilino.nombre} {inquilino.apellido}";
+            return View(contratos);
+        }
+
     }
 }

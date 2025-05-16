@@ -41,6 +41,33 @@ namespace inmobiliaria_santi.Controllers
             return View(inmuebles);
         }
 
+        // GET: Inmueble/InmueblesDisponibles
+        [Authorize(Roles = "Administrador,Empleado")]
+        public IActionResult InmueblesDisponibles()
+        {
+            try
+            {
+                var disponibles = _repositorio.ObtenerDisponibles()
+                    .Where(i => i.disponible && i.estado)
+                    .ToList();
+
+                if (!disponibles.Any())
+                {
+                    TempData["Mensaje"] = "No hay inmuebles disponibles actualmente.";
+                    TempData["Tipo"] = "info";
+                }
+
+                return View(disponibles);
+            }
+            catch (Exception ex)
+            {
+                TempData["Mensaje"] = "Error al obtener los inmuebles disponibles: " + ex.Message;
+                TempData["Tipo"] = "error";
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+
 
         // GET: Inmueble/Crear
         [Authorize(Roles = "Administrador")]

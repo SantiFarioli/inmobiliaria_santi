@@ -1,0 +1,42 @@
+@model IEnumerable<inmobiliaria_santi.Models.Contrato>
+@{
+    ViewData["Title"] = "Contratos Activos del Inquilino";
+    var nombreInquilino = ViewBag.InquilinoNombre as string;
+}
+
+<h2 class="text-center my-4">📄 Contratos Activos de @nombreInquilino</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info text-center">
+        Este inquilino no tiene contratos activos actualmente.
+    </div>
+}
+else
+{
+    <table class="table table-bordered table-hover table-striped mx-auto shadow-sm" style="max-width: 95%;">
+        <thead class="table-primary text-center">
+            <tr>
+                <th>🏠 Inmueble</th>
+                <th>📅 Inicio</th>
+                <th>📅 Fin</th>
+                <th>💵 Renta</th>
+                <th>⚙️ Acciones</th>
+            </tr>
+        </thead>
+        <tbody class="text-center align-middle">
+            @foreach (var c in Model)
+            {
+                <tr>
+                    <td>@c.InmuebleDireccion</td>
+                    <td>@c.fechaInicio.ToString("dd/MM/yyyy")</td>
+                    <td>@c.fechaFin.ToString("dd/MM/yyyy")</td>
+                    <td>@c.montoRenta?.ToString("C")</td>
+                    <td>
+                        <a class="btn btn-info btn-sm" asp-controller="Contrato" asp-action="Detalle" asp-route-id="@c.idContrato">👁️ Ver</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

@@ -309,7 +309,7 @@ namespace inmobiliaria_santi.Models
             }
             return contratos;
         }
-        
+
         public bool ExisteContratoActivoEnFechas(int idInmueble, DateTime fechaInicio, DateTime fechaFin)
         {
             using var conexion = new MySqlConnection(connectionString);
@@ -329,7 +329,48 @@ namespace inmobiliaria_santi.Models
             int cantidad = Convert.ToInt32(comando.ExecuteScalar());
             return cantidad > 0;
         }
+        
+        public List<Contrato> ObtenerContratosActivosPorInquilino(int idInquilino)
+        {
+            var lista = new List<Contrato>();
+            using var conexion = new MySqlConnection(connectionString);
+            var sql = $@"
+                SELECT c.{nameof(Contrato.idContrato)}, c.{nameof(Contrato.idInmueble)}, c.{nameof(Contrato.idInquilino)},
+                    c.{nameof(Contrato.fechaInicio)}, c.{nameof(Contrato.fechaFin)}, c.{nameof(Contrato.montoRenta)},
+                    c.{nameof(Contrato.deposito)}, c.{nameof(Contrato.comision)}, c.{nameof(Contrato.condiciones)},
+                    c.{nameof(Contrato.estado)}, i.{nameof(Inquilino.nombre)} AS InquilinoNombre,
+                    i.{nameof(Inquilino.apellido)} AS InquilinoApellido,
+                    inm.{nameof(Inmueble.direccion)} AS InmuebleDireccion
+                FROM contrato c
+                INNER JOIN inquilino i ON c.{nameof(Contrato.idInquilino)} = i.{nameof(Inquilino.idInquilino)}
+                INNER JOIN inmueble inm ON c.{nameof(Contrato.idInmueble)} = inm.{nameof(Inmueble.idInmueble)}
+                WHERE c.{nameof(Contrato.estado)} = 1 AND c.{nameof(Contrato.idInquilino)} = @{nameof(idInquilino)};";
 
+            using var comando = new MySqlCommand(sql, conexion);
+            comando.Parameters.AddWithValue($"@{nameof(idInquilino)}", idInquilino);
+            conexion.Open();
+            using var reader = comando.ExecuteReader();
+            while (reader.Read())
+            {
+                lista.Add(new Contrato
+                {
+                    idContrato = reader.GetInt32(nameof(Contrato.idContrato)),
+                    idInmueble = reader.GetInt32(nameof(Contrato.idInmueble)),
+                    idInquilino = reader.GetInt32(nameof(Contrato.idInquilino)),
+                    fechaInicio = reader.GetDateTime(nameof(Contrato.fechaInicio)),
+                    fechaFin = reader.GetDateTime(nameof(Contrato.fechaFin)),
+                    montoRenta = reader.GetDecimal(nameof(Contrato.montoRenta)),
+                    deposito = reader.GetDecimal(nameof(Contrato.deposito)),
+                    comision = reader.GetDecimal(nameof(Contrato.comision)),
+                    condiciones = reader[nameof(Contrato.condiciones)]?.ToString(),
+                    estado = reader.GetBoolean(nameof(Contrato.estado)),
+                    InquilinoNombre = reader[nameof(Contrato.InquilinoNombre)]?.ToString(),
+                    InquilinoApellido = reader[nameof(Contrato.InquilinoApellido)]?.ToString(),
+                    InmuebleDireccion = reader[nameof(Contrato.InmuebleDireccion)]?.ToString()
+                });
+            }
+            return lista;
+        }
 
     }
 }
