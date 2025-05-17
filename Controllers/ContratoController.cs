@@ -379,5 +379,35 @@ namespace inmobiliaria_santi.Controllers
             ViewBag.Inquilino = _repositorioInquilino.ObtenerPorId(idInquilino);
             return View("ContratosActivosPorInquilino", contratos); // nombre de la vista .cshtml
         }
+
+        // GET: Contrato/PorVencer
+        [Authorize(Roles = "Administrador,Empleado")]
+        public IActionResult PorVencer()
+        {
+            try
+            {
+                var contratos = _repositorioContrato.ObtenerContratosPorVencer();
+                if (!contratos.Any())
+                {
+                    TempData["Mensaje"] = "No hay contratos próximos a vencer.";
+                    TempData["Tipo"] = "info";
+                }
+                return View(contratos);
+            }
+            catch (Exception ex)
+            {
+                TempData["Mensaje"] = "Error al cargar los contratos por vencer: " + ex.Message;
+                TempData["Tipo"] = "error";
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        [Authorize(Roles = "Administrador,Empleado")]
+        public IActionResult Rescindidos()
+        {
+            var rescindidos = _repositorioContrato.ObtenerRescindidos();
+            return View(rescindidos);
+        }
+
     }
 }

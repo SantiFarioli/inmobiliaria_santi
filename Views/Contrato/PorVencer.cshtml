@@ -1,0 +1,59 @@
+@model IEnumerable<inmobiliaria_santi.Models.Contrato>
+@{
+    ViewData["Title"] = "Contratos por Vencer (próximos 30 días)";
+}
+
+<h2 class="text-center my-4">📅 Contratos por Vencer (próximos 30 días)</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info text-center">
+        No hay contratos por vencer en los próximos 30 días.
+    </div>
+}
+else
+{
+    <div class="table-responsive mx-auto" style="max-width: 1200px;">
+        <table class="table table-bordered table-hover table-striped align-middle text-center shadow-sm">
+            <thead class="table-warning">
+                <tr>
+                    <th>🏠 Inmueble</th>
+                    <th>👤 Inquilino</th>
+                    <th>👥 Propietario</th>
+                    <th>📅 Inicio</th>
+                    <th>📅 Fin</th>
+                    <th>⏳ Días Restantes</th>
+                    <th>💰 Renta</th>
+                    <th>⚙️ Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    var diasRestantes = (item.fechaFin - DateTime.Today).Days;
+                    <tr>
+                        <td>@item.InmuebleDireccion</td>
+                        <td>@item.InquilinoNombre @item.InquilinoApellido</td>
+                        <td>@item.PropietarioNombre @item.PropietarioApellido</td>
+                        <td>@item.fechaInicio.ToString("dd/MM/yyyy")</td>
+                        <td class="fw-bold text-danger">@item.fechaFin.ToString("dd/MM/yyyy")</td>
+                        <td class="fw-bold">@diasRestantes días</td>
+                        <td>@item.montoRenta?.ToString("C")</td>
+                        <td>
+                            <div class="btn-group">
+                                <a class="btn btn-info btn-sm" asp-action="Detalle" asp-route-id="@item.idContrato">👁️ Ver</a>
+                                <a class="btn btn-warning btn-sm" asp-action="Editar" asp-route-id="@item.idContrato">✏️ Editar</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<div class="text-center mt-4">
+    <a asp-controller="Contrato" asp-action="Index" class="btn btn-secondary">
+        🔙 Volver al Listado de Contratos
+    </a>
+</div>

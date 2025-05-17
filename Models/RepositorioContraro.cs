@@ -329,7 +329,7 @@ namespace inmobiliaria_santi.Models
             int cantidad = Convert.ToInt32(comando.ExecuteScalar());
             return cantidad > 0;
         }
-        
+
         public List<Contrato> ObtenerContratosActivosPorInquilino(int idInquilino)
         {
             var lista = new List<Contrato>();
@@ -367,6 +367,98 @@ namespace inmobiliaria_santi.Models
                     InquilinoNombre = reader[nameof(Contrato.InquilinoNombre)]?.ToString(),
                     InquilinoApellido = reader[nameof(Contrato.InquilinoApellido)]?.ToString(),
                     InmuebleDireccion = reader[nameof(Contrato.InmuebleDireccion)]?.ToString()
+                });
+            }
+            return lista;
+        }
+
+        public List<Contrato> ObtenerContratosPorVencer(int dias = 30)
+        {
+            var lista = new List<Contrato>();
+            using var conexion = new MySqlConnection(connectionString);
+            var sql = $@"
+                SELECT 
+                    c.{nameof(Contrato.idContrato)}, c.{nameof(Contrato.idInmueble)}, c.{nameof(Contrato.idInquilino)},
+                    c.{nameof(Contrato.fechaInicio)}, c.{nameof(Contrato.fechaFin)}, c.{nameof(Contrato.montoRenta)},
+                    i.{nameof(Inmueble.direccion)} AS {nameof(Contrato.InmuebleDireccion)},
+                    inq.{nameof(Inquilino.nombre)} AS {nameof(Contrato.InquilinoNombre)},
+                    inq.{nameof(Inquilino.apellido)} AS {nameof(Contrato.InquilinoApellido)},
+                    p.{nameof(Propietario.nombre)} AS {nameof(Contrato.PropietarioNombre)},
+                    p.{nameof(Propietario.apellido)} AS {nameof(Contrato.PropietarioApellido)}
+                FROM contrato c
+                JOIN inmueble i ON c.{nameof(Contrato.idInmueble)} = i.{nameof(Inmueble.idInmueble)}
+                JOIN propietario p ON i.{nameof(Inmueble.idPropietario)} = p.{nameof(Propietario.idPropietario)}
+                JOIN inquilino inq ON c.{nameof(Contrato.idInquilino)} = inq.{nameof(Inquilino.idInquilino)}
+                WHERE c.{nameof(Contrato.estado)} = 1
+                AND c.{nameof(Contrato.fechaFin)} BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL @dias DAY)
+                ORDER BY c.{nameof(Contrato.fechaFin)} ASC";
+
+            using var comando = new MySqlCommand(sql, conexion);
+            comando.Parameters.AddWithValue("@dias", dias);
+            conexion.Open();
+            using var reader = comando.ExecuteReader();
+            while (reader.Read())
+            {
+                lista.Add(new Contrato
+                {
+                    idContrato = reader.GetInt32(nameof(Contrato.idContrato)),
+                    idInmueble = reader.GetInt32(nameof(Contrato.idInmueble)),
+                    idInquilino = reader.GetInt32(nameof(Contrato.idInquilino)),
+                    fechaInicio = reader.GetDateTime(nameof(Contrato.fechaInicio)),
+                    fechaFin = reader.GetDateTime(nameof(Contrato.fechaFin)),
+                    montoRenta = reader.GetDecimal(nameof(Contrato.montoRenta)),
+                    InmuebleDireccion = reader[nameof(Contrato.InmuebleDireccion)].ToString(),
+                    InquilinoNombre = reader[nameof(Contrato.InquilinoNombre)].ToString(),
+                    InquilinoApellido = reader[nameof(Contrato.InquilinoApellido)].ToString(),
+                    PropietarioNombre = reader[nameof(Contrato.PropietarioNombre)].ToString(),
+                    PropietarioApellido = reader[nameof(Contrato.PropietarioApellido)].ToString()
+                });
+            }
+            return lista;
+        }
+        
+        public List<Contrato> ObtenerRescindidos()
+        {
+            var lista = new List<Contrato>();
+            using var conexion = new MySqlConnection(connectionString);
+            var sql = $@"
+                SELECT 
+                    c.{nameof(Contrato.idContrato)}, c.{nameof(Contrato.idInmueble)}, c.{nameof(Contrato.idInquilino)},
+                    c.{nameof(Contrato.fechaInicio)}, c.{nameof(Contrato.fechaFin)}, c.{nameof(Contrato.montoRenta)},
+                    c.{nameof(Contrato.multaTerminacionTemprana)}, c.{nameof(Contrato.fechaTerminacionTemprana)}, c.{nameof(Contrato.porcentajeMulta)},
+                    i.{nameof(Inmueble.direccion)} AS {nameof(Contrato.InmuebleDireccion)},
+                    inq.{nameof(Inquilino.nombre)} AS {nameof(Contrato.InquilinoNombre)},
+                    inq.{nameof(Inquilino.apellido)} AS {nameof(Contrato.InquilinoApellido)},
+                    p.{nameof(Propietario.nombre)} AS {nameof(Contrato.PropietarioNombre)},
+                    p.{nameof(Propietario.apellido)} AS {nameof(Contrato.PropietarioApellido)}
+                FROM contrato c
+                JOIN inmueble i ON c.idInmueble = i.idInmueble
+                JOIN inquilino inq ON c.idInquilino = inq.idInquilino
+                JOIN propietario p ON i.idPropietario = p.idPropietario
+                WHERE c.estado = 0
+                ORDER BY c.fechaTerminacionTemprana DESC";
+
+            using var comando = new MySqlCommand(sql, conexion);
+            conexion.Open();
+            using var reader = comando.ExecuteReader();
+            while (reader.Read())
+            {
+                lista.Add(new Contrato
+                {
+                    idContrato = reader.GetInt32(nameof(Contrato.idContrato)),
+                    idInmueble = reader.GetInt32(nameof(Contrato.idInmueble)),
+                    idInquilino = reader.GetInt32(nameof(Contrato.idInquilino)),
+                    fechaInicio = reader.GetDateTime(nameof(Contrato.fechaInicio)),
+                    fechaFin = reader.GetDateTime(nameof(Contrato.fechaFin)),
+                    montoRenta = reader.GetDecimal(nameof(Contrato.montoRenta)),
+                    multaTerminacionTemprana = reader.IsDBNull(reader.GetOrdinal(nameof(Contrato.multaTerminacionTemprana))) ? null : reader.GetDecimal(nameof(Contrato.multaTerminacionTemprana)),
+                    fechaTerminacionTemprana = reader.IsDBNull(reader.GetOrdinal(nameof(Contrato.fechaTerminacionTemprana))) ? null : reader.GetDateTime(nameof(Contrato.fechaTerminacionTemprana)),
+                    porcentajeMulta = reader.IsDBNull(reader.GetOrdinal(nameof(Contrato.porcentajeMulta))) ? null : reader.GetDecimal(nameof(Contrato.porcentajeMulta)),
+                    InmuebleDireccion = reader[nameof(Contrato.InmuebleDireccion)].ToString(),
+                    InquilinoNombre = reader[nameof(Contrato.InquilinoNombre)].ToString(),
+                    InquilinoApellido = reader[nameof(Contrato.InquilinoApellido)].ToString(),
+                    PropietarioNombre = reader[nameof(Contrato.PropietarioNombre)].ToString(),
+                    PropietarioApellido = reader[nameof(Contrato.PropietarioApellido)].ToString()
                 });
             }
             return lista;
