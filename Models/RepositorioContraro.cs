@@ -283,30 +283,56 @@ namespace inmobiliaria_santi.Models
             }
         }
 
-        public List<Contrato> ObtenerContratosConResumen()
+        public List<Contrato> ObtenerContratosConResumen(int? incluirIdContrato = null)
         {
             var contratos = new List<Contrato>();
-            using (var conexion = new MySqlConnection(connectionString))
+        
+            if (incluirIdContrato.HasValue)
             {
-                var sql = @"SELECT c.idContrato, CONCAT(i.direccion, ' - ', inq.nombre, ' ', inq.apellido) AS ContratoResumen
-                            FROM contrato c
-                            INNER JOIN inmueble i ON c.idInmueble = i.idInmueble
-                            INNER JOIN inquilino inq ON c.idInquilino = inq.idInquilino
-                            WHERE c.estado = 1";
-                using (var comando = new MySqlCommand(sql, conexion))
+                // Solo traer el contrato solicitado
+                var contrato = ObtenerPorId(incluirIdContrato.Value);
+                if (contrato != null)
                 {
-                    conexion.Open();
-                    var reader = comando.ExecuteReader();
-                    while (reader.Read())
+                    contrato.ContratoResumen = $"{contrato.InmuebleDireccion} - Inquilino: {contrato.InquilinoNombre} {contrato.InquilinoApellido} - Propietario: {contrato.PropietarioNombre} {contrato.PropietarioApellido}";
+                    contratos.Add(contrato);
+                }
+            }
+            else
+            {
+                // Traer todos los contratos activos
+                using (var conexion = new MySqlConnection(connectionString))
+                {
+                    var sql = $@"
+                        SELECT c.{nameof(Contrato.idContrato)},
+                            i.{nameof(Inmueble.direccion)} AS InmuebleDireccion,
+                            inq.{nameof(Inquilino.nombre)} AS InquilinoNombre,
+                            inq.{nameof(Inquilino.apellido)} AS InquilinoApellido,
+                            p.{nameof(Propietario.nombre)} AS PropietarioNombre,
+                            p.{nameof(Propietario.apellido)} AS PropietarioApellido
+                        FROM contrato c
+                        JOIN inmueble i ON c.idInmueble = i.idInmueble
+                        JOIN inquilino inq ON c.idInquilino = inq.idInquilino
+                        JOIN propietario p ON i.idPropietario = p.idPropietario
+                        WHERE c.estado = 1";
+        
+                    using (var comando = new MySqlCommand(sql, conexion))
                     {
-                        contratos.Add(new Contrato
+                        conexion.Open();
+                        using (var reader = comando.ExecuteReader())
                         {
-                            idContrato = reader.GetInt32("idContrato"),
-                            ContratoResumen = reader["ContratoResumen"].ToString()
-                        });
+                            while (reader.Read())
+                            {
+                                contratos.Add(new Contrato
+                                {
+                                    idContrato = reader.GetInt32(nameof(Contrato.idContrato)),
+                                    ContratoResumen = $"Contrato ID: {reader.GetInt32(nameof(Contrato.idContrato))} | Inmueble: {reader[nameof(Contrato.InmuebleDireccion)]} | Inquilino: {reader[nameof(Contrato.InquilinoNombre)]} {reader[nameof(Contrato.InquilinoApellido)]} | Propietario: {reader[nameof(Contrato.PropietarioNombre)]} {reader[nameof(Contrato.PropietarioApellido)]}"
+                                });
+                            }
+                        }
                     }
                 }
             }
+        
             return contratos;
         }
 

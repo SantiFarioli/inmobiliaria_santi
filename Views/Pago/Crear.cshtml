@@ -14,30 +14,49 @@
 
                 <!-- Contrato -->
                 <div class="form-group mb-3">
-                    <label for="idContrato" class="form-label"> Contrato</label>
-                    <select asp-for="idContrato" class="form-select" asp-items="ViewBag.Contratos" required>
-                        <option value="">Seleccione un contrato</option>
-                    </select>
+                    <label asp-for="idContrato" class="form-label">Contrato</label>
+
+                    @if (ViewBag.idContratoFijo == true)
+                    {
+                        <!-- Contrato preseleccionado y bloqueado -->
+                        <select class="form-select" disabled>
+                            @foreach (var contrato in (SelectList)ViewBag.Contratos)
+                            {
+                                var selected = contrato.Value == Model.idContrato.ToString() ? "selected" : "";
+                                <option value="@contrato.Value" selected>@contrato.Text</option>
+                            }
+                        </select>
+                        <!-- Input oculto para enviar el valor -->
+                        <input type="hidden" asp-for="idContrato" />
+                    }
+                    else
+                    {
+                        <!-- Selector editable -->
+                        <select asp-for="idContrato" asp-items="ViewBag.Contratos" class="form-select" required>
+                            <option value="">Seleccione un contrato</option>
+                        </select>
+                    }
+
                     <span asp-validation-for="idContrato" class="text-danger"></span>
                 </div>
 
                 <!-- Fecha de Pago -->
                 <div class="form-group mb-3">
-                    <label asp-for="fechaPago" class="form-label"> Fecha de Pago</label>
+                    <label asp-for="fechaPago" class="form-label">Fecha de Pago</label>
                     <input asp-for="fechaPago" class="form-control" type="date" required />
                     <span asp-validation-for="fechaPago" class="text-danger"></span>
                 </div>
 
                 <!-- Importe -->
                 <div class="form-group mb-3">
-                    <label asp-for="importe" class="form-label"> Importe</label>
+                    <label asp-for="importe" class="form-label">Importe</label>
                     <input asp-for="importe" class="form-control" step="0.01" required />
                     <span asp-validation-for="importe" class="text-danger"></span>
                 </div>
 
                 <!-- Detalle -->
                 <div class="form-group mb-3">
-                    <label asp-for="detalle" class="form-label"> Detalle</label>
+                    <label asp-for="detalle" class="form-label">Detalle</label>
                     <textarea asp-for="detalle" class="form-control" rows="3" placeholder="Ej: Alquiler mes de mayo..."></textarea>
                     <span asp-validation-for="detalle" class="text-danger"></span>
                 </div>
@@ -50,12 +69,8 @@
 
                 <!-- Botones -->
                 <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-primary me-2">
-                        💾 Registrar
-                    </button>
-                    <a asp-action="Index" class="btn btn-secondary">
-                        ↩️ Cancelar
-                    </a>
+                    <button type="submit" class="btn btn-primary me-2">💾 Registrar</button>
+                    <a asp-action="Index" class="btn btn-secondary">↩️ Cancelar</a>
                 </div>
             </form>
         </div>

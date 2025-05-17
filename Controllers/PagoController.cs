@@ -8,18 +8,20 @@ namespace inmobiliaria_santi.Controllers
     [Authorize]
     public class PagoController : Controller
     {
-        private readonly RepositorioPago _repositorio;
+        private readonly RepositorioPago _repositorioPago;
+        private readonly RepositorioContrato _repositorioContrato;
 
-        public PagoController(RepositorioPago repositorio)
+        public PagoController(RepositorioPago repositorioPago, RepositorioContrato repositorioContrato)
         {
-            _repositorio = repositorio;
+            _repositorioContrato = repositorioContrato;
+            _repositorioPago = repositorioPago;
         }
 
         // GET: Pago
         [Authorize(Roles = "Administrador,Empleado")]
         public IActionResult Index(string q)
         {
-            var pagos = _repositorio.ObtenerTodos();
+            var pagos = _repositorioPago.ObtenerTodos();
 
             if (!string.IsNullOrEmpty(q))
             {
@@ -37,21 +39,32 @@ namespace inmobiliaria_santi.Controllers
 
         // GET: Pago/Crear
         [Authorize(Roles = "Administrador")]
-        public IActionResult Crear()
+        [HttpGet]
+        public IActionResult Crear(int? idContrato)
         {
-            var repoContrato = new RepositorioContrato();
-            var contratos = repoContrato.ObtenerContratosConResumen();
-
+            // Trae solo el contrato correspondiente
+            var contratos = idContrato.HasValue
+                ? _repositorioContrato.ObtenerContratosConResumen(idContrato.Value)
+                : _repositorioContrato.ObtenerContratosConResumen();
+        
             if (contratos == null || !contratos.Any())
             {
                 TempData["Mensaje"] = "⚠️ No hay contratos disponibles para registrar pagos.";
                 TempData["Tipo"] = "warning";
                 return RedirectToAction(nameof(Index));
             }
-
-            ViewBag.Contratos = new SelectList(contratos, nameof(Contrato.idContrato), nameof(Contrato.ContratoResumen));
-            return View(new Pago());
+        
+            ViewBag.idContratoFijo = idContrato.HasValue;
+            ViewBag.Contratos = new SelectList(contratos, nameof(Contrato.idContrato), nameof(Contrato.ContratoResumen), idContrato);
+        
+            return View(new Pago
+            {
+                idContrato = idContrato ?? 0,
+                estado = true,
+                usuarioCreacion = User.Identity?.Name ?? "sistema"
+            });
         }
+
 
         // POST: Pago/Crear
         [HttpPost]
@@ -59,25 +72,26 @@ namespace inmobiliaria_santi.Controllers
         [Authorize(Roles = "Administrador")]
         public IActionResult Crear(Pago pago)
         {
-            var repoContrato = new RepositorioContrato();
-            ViewBag.Contratos = new SelectList(repoContrato.ObtenerContratosConResumen(), nameof(Contrato.idContrato), nameof(Contrato.ContratoResumen)); 
+            var contratos = _repositorioContrato.ObtenerContratosConResumen(pago.idContrato);
+            ViewBag.Contratos = new SelectList(contratos, nameof(Contrato.idContrato), nameof(Contrato.ContratoResumen), pago.idContrato);
+            ViewBag.idContratoFijo = true;
 
             try
             {
                 // 💡 Setear nroPago ANTES de validar
-                pago.nroPago = _repositorio.ObtenerUltimoNumeroPago(pago.idContrato) + 1;
+                pago.nroPago = _repositorioPago.ObtenerUltimoNumeroPago(pago.idContrato) + 1;
 
-                if (_repositorio.ExistePago(0, pago.idContrato, pago.nroPago))
+                if (_repositorioPago.ExistePago(0, pago.idContrato, pago.nroPago))
                 {
                     TempData["Mensaje"] = "Ya existe un pago con ese número para este contrato.";
                     TempData["Tipo"] = "warning";
-                    return View(pago); 
+                    return View(pago);
                 }
 
                 if (ModelState.IsValid)
                 {
                     pago.usuarioCreacion = User.Identity?.Name ?? "sistema";
-                    _repositorio.CrearPago(pago);
+                    _repositorioPago.CrearPago(pago);
                     TempData["Mensaje"] = "Pago registrado correctamente.";
                     TempData["Tipo"] = "success";
                     return RedirectToAction(nameof(Index));
@@ -92,14 +106,14 @@ namespace inmobiliaria_santi.Controllers
                 TempData["Tipo"] = "error";
             }
 
-            return View(pago); 
+            return View(pago);
         }
 
         // GET: Pago/Editar/5
         [Authorize(Roles = "Administrador")]
         public IActionResult Editar(int id)
         {
-            var pago = _repositorio.ObtenerPorId(id);
+            var pago = _repositorioPago.ObtenerPorId(id);
             if (pago == null)
                 return NotFound();
             return View(pago);
@@ -113,7 +127,7 @@ namespace inmobiliaria_santi.Controllers
         {
             try
             {
-                if (_repositorio.ExistePago(pago.idPago, pago.idContrato, pago.nroPago))
+                if (_repositorioPago.ExistePago(pago.idPago, pago.idContrato, pago.nroPago))
                 {
                     TempData["Mensaje"] = "Ya existe un pago con ese número para este contrato.";
                     TempData["Tipo"] = "warning";
@@ -122,7 +136,7 @@ namespace inmobiliaria_santi.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    _repositorio.ActualizarPago(pago);
+                    _repositorioPago.ActualizarPago(pago);
                     TempData["Mensaje"] = "Pago modificado correctamente.";
                     TempData["Tipo"] = "success";
                     return RedirectToAction(nameof(Index));
@@ -144,7 +158,7 @@ namespace inmobiliaria_santi.Controllers
         [Authorize(Roles = "Administrador,Empleado")]
         public IActionResult Detalle(int id)
         {
-            var pago = _repositorio.ObtenerPorId(id);
+            var pago = _repositorioPago.ObtenerPorId(id);
             if (pago == null)
                 return NotFound();
             return View(pago);
@@ -157,7 +171,7 @@ namespace inmobiliaria_santi.Controllers
             try
             {
                 var usuario = User.Identity?.Name ?? "sistema";
-                _repositorio.EliminarPago(id, usuario);
+                _repositorioPago.EliminarPago(id, usuario);
                 TempData["Mensaje"] = "Pago Anulado correctamente.";
                 TempData["Tipo"] = "success";
             }
@@ -168,5 +182,15 @@ namespace inmobiliaria_santi.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
+        
+        // GET: Pago/PorContrato/5
+        [Authorize(Roles = "Administrador,Empleado")]
+        public IActionResult PorContrato(int idContrato)
+        {
+            var pagos = _repositorioPago.ObtenerPagosPorContrato(idContrato);
+            ViewBag.Contrato = _repositorioContrato.ObtenerPorId(idContrato);
+            return View("PorContrato", pagos); // asegúrate de crear la vista PorContrato.cshtml
+        }
+
     }
 }

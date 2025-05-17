@@ -71,13 +71,17 @@
                             }
                         </td>
                         <td class="text-center">
-                            <a class="btn btn-info btn-sm" asp-action="Detalle" asp-route-id="@item.idContrato">👁️</a>
-                            @if (esAdmin)
-                            {
-                                <a class="btn btn-warning btn-sm" asp-action="Editar" asp-route-id="@item.idContrato">✏️</a>
-                                <button type="button" class="btn btn-danger btn-sm" onclick="confirmarEliminacion(@item.idContrato)">🗑️</button>
-                            }
+                            <div class="btn-group">
+                                <a class="btn btn-info btn-sm" asp-action="Detalle" asp-route-id="@item.idContrato">👁️</a>
+                                <a class="btn btn-outline-success btn-sm" asp-controller="Pago" asp-action="PorContrato" asp-route-idContrato="@item.idContrato" title="Ver Pagos">💳</a>
+                                @if (esAdmin)
+                                {
+                                    <a class="btn btn-warning btn-sm" asp-action="Editar" asp-route-id="@item.idContrato">✏️</a>
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmarEliminacion(@item.idContrato)">🗑️</button>
+                                }
+                            </div>
                         </td>
+
                     </tr>
                 }
             </tbody>

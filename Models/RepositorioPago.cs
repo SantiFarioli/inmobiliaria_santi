@@ -181,7 +181,7 @@ public class RepositorioPago
             }
         }
     }
-    
+
     public int ObtenerUltimoNumeroPago(int idContrato)
     {
         int ultimo = 0;
@@ -201,6 +201,55 @@ public class RepositorioPago
             }
         }
         return ultimo;
+    }
+    
+    public List<Pago> ObtenerPagosPorContrato(int idContrato)
+    {
+        var lista = new List<Pago>();
+        using var conexion = new MySqlConnection(connectionString);
+        var sql = $@"
+            SELECT 
+                p.{nameof(Pago.idPago)},
+                p.{nameof(Pago.idContrato)},
+                p.{nameof(Pago.nroPago)},
+                p.{nameof(Pago.fechaPago)},
+                p.{nameof(Pago.detalle)},
+                p.{nameof(Pago.importe)},
+                p.{nameof(Pago.estado)},
+                p.{nameof(Pago.usuarioCreacion)},
+                p.{nameof(Pago.usuarioAnulacion)},
+                p.{nameof(Pago.usuarioEliminacion)},
+                CONCAT(i.direccion, ' - ', inq.nombre, ' ', inq.apellido) AS ContratoResumen
+            FROM pago p
+            INNER JOIN contrato c ON p.idContrato = c.idContrato
+            INNER JOIN inmueble i ON c.idInmueble = i.idInmueble
+            INNER JOIN inquilino inq ON c.idInquilino = inq.idInquilino
+            WHERE p.idContrato = @idContrato
+            ORDER BY p.fechaPago DESC";
+
+        using var comando = new MySqlCommand(sql, conexion);
+        comando.Parameters.AddWithValue("@idContrato", idContrato);
+        conexion.Open();
+
+        using var reader = comando.ExecuteReader();
+        while (reader.Read())
+        {
+            lista.Add(new Pago
+            {
+                idPago = reader.GetInt32(nameof(Pago.idPago)),
+                idContrato = reader.GetInt32(nameof(Pago.idContrato)),
+                nroPago = reader.GetInt32(nameof(Pago.nroPago)),
+                fechaPago = reader.GetDateTime(nameof(Pago.fechaPago)),
+                detalle = reader[nameof(Pago.detalle)]?.ToString(),
+                importe = reader.GetDecimal(nameof(Pago.importe)),
+                estado = reader.GetBoolean(nameof(Pago.estado)),
+                usuarioCreacion = reader[nameof(Pago.usuarioCreacion)]?.ToString(),
+                usuarioAnulacion = reader[nameof(Pago.usuarioAnulacion)]?.ToString(),
+                usuarioEliminacion = reader[nameof(Pago.usuarioEliminacion)]?.ToString(),
+                ContratoResumen = reader["ContratoResumen"]?.ToString()
+            });
+        }
+        return lista;
     }
 
 }

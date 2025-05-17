@@ -1,0 +1,99 @@
+@model IEnumerable<inmobiliaria_santi.Models.Pago>
+@{
+    ViewData["Title"] = "Pagos del Contrato";
+    var contrato = ViewBag.Contrato as inmobiliaria_santi.Models.Contrato;
+    var esAdmin = User.IsInRole("Administrador");
+}
+
+<h2 class="text-center my-4">💳 Pagos del Contrato</h2>
+
+@if (contrato != null)
+{
+    <div class="card shadow-sm mb-4 mx-auto text-center" style="max-width: 800px;">
+        <div class="card-body">
+            <p class="mb-1"><strong>Inquilino:</strong> @contrato.InquilinoNombre @contrato.InquilinoApellido</p>
+            <p class="mb-1"><strong>Propietario:</strong> @contrato.PropietarioNombre @contrato.PropietarioApellido</p>
+            <p class="mb-1"><strong>Inmueble:</strong> @contrato.InmuebleDireccion</p>
+            <p class="mb-0"><strong>Período:</strong> @contrato.fechaInicio.ToString("dd/MM/yyyy") - @contrato.fechaFin.ToString("dd/MM/yyyy")</p>
+        </div>
+    </div>
+}
+
+<div class="text-center mb-3">
+    @if (esAdmin)
+    {
+        <a asp-action="Crear" asp-route-idContrato="@ViewBag.Contrato.idContrato" class="btn btn-success">
+            ➕ Registrar Pago
+        </a>
+
+    }
+    <a asp-controller="Contrato" asp-action="Index" class="btn btn-secondary">
+        🔙 Volver al Listado de Contratos
+    </a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info text-center">
+        No hay pagos registrados para este contrato.
+    </div>
+}
+else
+{
+    <div class="table-responsive mx-auto" style="max-width: 1000px;">
+        <table class="table table-bordered table-striped table-hover shadow-sm align-middle text-center">
+            <thead class="table-primary">
+                <tr>
+                    <th># Pago</th>
+                    <th>📅 Fecha</th>
+                    <th>📝 Detalle</th>
+                    <th>💰 Importe</th>
+                    <th>⚙️ Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var pago in Model)
+                {
+                    <tr>
+                        <td>@pago.nroPago</td>
+                        <td>@pago.fechaPago.ToString("dd/MM/yyyy")</td>
+                        <td>@(string.IsNullOrWhiteSpace(pago.detalle) ? "Sin detalle" : pago.detalle)</td>
+                        <td>@pago.importe.ToString("C")</td>
+                        <td>
+                            <div class="btn-group">
+                                <a class="btn btn-info btn-sm" asp-action="Detalle" asp-route-id="@pago.idPago">👁️</a>
+                                @if (esAdmin)
+                                {
+                                    <a class="btn btn-warning btn-sm" asp-action="Editar" asp-route-id="@pago.idPago">✏️</a>
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmarEliminacion(@pago.idPago)">🗑️</button>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function confirmarEliminacion(id) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "Esta acción anulará el pago.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, anular',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/Pago/EliminarConfirmado/' + id;
+                }
+            });
+        }
+    </script>
+}
