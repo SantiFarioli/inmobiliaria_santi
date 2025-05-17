@@ -63,7 +63,7 @@
                             <td>
                                 <div class="btn-group" role="group">
                                     <a class="btn btn-info btn-sm" asp-action="Detalle" asp-route-id="@item.idInquilino" title="Detalle">👁️</a>
-                                    <a class="btn btn-outline-primary btn-sm" asp-controller="Contrato" asp-action="ActivosPorInquilino" asp-route-idInquilino="@item.idInquilino" title="Contratos Activos">📄 Contratos</a>
+                                    <a class="btn btn-outline-primary btn-sm" asp-controller="Contrato" asp-action="PorInquilino" asp-route-idInquilino="@item.idInquilino" title="Contratos Activos">📄 Contratos</a>
                                     @if (esAdmin)
                                     {
                                         <a class="btn btn-warning btn-sm" asp-action="Editar" asp-route-id="@item.idInquilino" title="Editar">✏️</a>

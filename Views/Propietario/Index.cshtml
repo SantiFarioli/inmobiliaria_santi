@@ -63,6 +63,7 @@
                             <td>
                                 <div class="btn-group" role="group">
                                     <a class="btn btn-info btn-sm" asp-action="Detalle" asp-route-id="@item.idPropietario" title="Detalle">👁️</a>
+                                    <a class="btn btn-outline-primary btn-sm" asp-controller="Contrato" asp-action="PorPropietario" asp-route-idPropietario="@item.idPropietario" title="Ver Contratos">📑 Contratos</a>
                                     @if (esAdmin)
                                     {
                                         <a class="btn btn-warning btn-sm" asp-action="Editar" asp-route-id="@item.idPropietario" title="Editar">✏️</a>
@@ -83,8 +84,6 @@ else
         No hay propietarios registrados aún.
     </div>
 }
-
-
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

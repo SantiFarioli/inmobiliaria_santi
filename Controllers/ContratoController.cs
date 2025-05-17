@@ -11,14 +11,17 @@ namespace inmobiliaria_santi.Controllers
         private readonly RepositorioContrato _repositorioContrato;
         private readonly RepositorioInquilino _repositorioInquilino;
         private readonly RepositorioInmueble _repositorioInmueble;
+        private readonly RepositorioPropietario _repositorioPropietario;
 
         public ContratoController(RepositorioContrato repositorioContrato,
                                   RepositorioInquilino repositorioInquilino,
-                                  RepositorioInmueble repositorioInmueble)
+                                  RepositorioInmueble repositorioInmueble,
+                                  RepositorioPropietario repositorioPropietario)
         {
             _repositorioContrato = repositorioContrato;
             _repositorioInquilino = repositorioInquilino;
             _repositorioInmueble = repositorioInmueble;
+            _repositorioPropietario = repositorioPropietario;
         }
 
         // GET: Contrato
@@ -365,21 +368,6 @@ namespace inmobiliaria_santi.Controllers
             return View(contrato);
         }
 
-        // GET: Contrato/ActivosPorInquilino/5
-        [Authorize(Roles = "Administrador,Empleado")]
-        public IActionResult ActivosPorInquilino(int idInquilino)
-        {
-            var contratos = _repositorioContrato.ObtenerContratosActivosPorInquilino(idInquilino);
-            if (!contratos.Any())
-            {
-                TempData["Mensaje"] = "Este inquilino no tiene contratos activos.";
-                TempData["Tipo"] = "info";
-            }
-
-            ViewBag.Inquilino = _repositorioInquilino.ObtenerPorId(idInquilino);
-            return View("ContratosActivosPorInquilino", contratos); // nombre de la vista .cshtml
-        }
-
         // GET: Contrato/PorVencer
         [Authorize(Roles = "Administrador,Empleado")]
         public IActionResult PorVencer()
@@ -407,6 +395,69 @@ namespace inmobiliaria_santi.Controllers
         {
             var rescindidos = _repositorioContrato.ObtenerRescindidos();
             return View(rescindidos);
+        }
+
+        // GET: Contrato/PorPropietario/5
+        [Authorize(Roles = "Administrador,Empleado")]
+        public IActionResult PorPropietario(int idPropietario)
+        {
+            var contratos = _repositorioContrato.ObtenerContratosActivosPorPropietario(idPropietario);
+            ViewBag.Propietario = _repositorioPropietario.ObtenerPorId(idPropietario);
+            return View(contratos);
+        }
+
+        // GET: Contrato/PorInquilino/5
+        [Authorize(Roles = "Administrador,Empleado")]
+        public IActionResult PorInquilino(int idInquilino)
+        {
+            var contratos = _repositorioContrato.ObtenerContratosActivosPorInquilino(idInquilino);
+            if (!contratos.Any())
+            {
+                TempData["Mensaje"] = "Este inquilino no tiene contratos activos.";
+                TempData["Tipo"] = "info";
+            }
+
+            ViewBag.Inquilino = _repositorioInquilino.ObtenerPorId(idInquilino);
+            return View("PorInquilino", contratos); // nombre de la vista .cshtml
+        }
+
+        // GET: Contrato/PorInmueble/5
+        [Authorize(Roles = "Administrador,Empleado")]
+        public IActionResult PorInmueble(int idInmueble)
+        {
+            var inmueble = _repositorioInmueble.ObtenerPorId(idInmueble);
+            if (inmueble == null)
+            {
+                TempData["Mensaje"] = "No se encontró el inmueble.";
+                TempData["Tipo"] = "warning";
+                return RedirectToAction("Index", "Inmueble");
+            }
+
+            var contratos = _repositorioContrato.ObtenerTodos()
+                .Where(c => c.idInmueble == idInmueble)
+                .ToList();
+
+            ViewBag.Inmueble = inmueble;
+            return View("PorInmueble", contratos);
+        }
+
+
+        [Authorize(Roles = "Administrador,Empleado")]
+        public IActionResult InmueblesAlquilados()
+        {
+            var todos = _repositorioContrato.ObtenerTodos();
+
+            var activos = todos
+                .Where(c => c.estado)
+                .Select(c =>
+                {
+                    var diasRestantes = (c.fechaFin - DateTime.Today).Days;
+                    c.ContratoResumen = diasRestantes.ToString(); // Lo usamos como campo auxiliar
+                    return c;
+                })
+                .ToList();
+
+            return View(activos);
         }
 
     }

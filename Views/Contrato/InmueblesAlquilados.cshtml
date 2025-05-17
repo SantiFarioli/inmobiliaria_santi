@@ -1,0 +1,48 @@
+@model IEnumerable<inmobiliaria_santi.Models.Contrato>
+@{
+    ViewData["Title"] = "Inmuebles Alquilados Actualmente";
+}
+
+<h2 class="text-center my-4">🏘️ Inmuebles Alquilados Actualmente</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info text-center">
+        No hay inmuebles alquilados actualmente.
+    </div>
+}
+else
+{
+    <div class="table-responsive mx-auto" style="max-width: 1200px;">
+        <table class="table table-bordered table-hover table-striped shadow-sm text-center align-middle">
+            <thead class="table-primary">
+                <tr>
+                    <th>📍 Dirección</th>
+                    <th>👤 Inquilino</th>
+                    <th>👥 Propietario</th>
+                    <th>📅 Inicio</th>
+                    <th>📅 Fin</th>
+                    <th>💵 Monto</th>
+                    <th>⏳ Días Restantes</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var contrato in Model)
+                {
+                    <tr>
+                        <td>@contrato.InmuebleDireccion</td>
+                        <td>@contrato.InquilinoNombre @contrato.InquilinoApellido</td>
+                        <td>@contrato.PropietarioNombre @contrato.PropietarioApellido</td>
+                        <td>@contrato.fechaInicio.ToString("dd/MM/yyyy")</td>
+                        <td>@contrato.fechaFin.ToString("dd/MM/yyyy")</td>
+                        <td>@contrato.montoRenta?.ToString("C")</td>
+                        <td>@contrato.ContratoResumen días</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="text-center mt-4">
+        <a asp-action="Index" class="btn btn-secondary">🔙 Volver al Listado</a>
+    </div>
+}
