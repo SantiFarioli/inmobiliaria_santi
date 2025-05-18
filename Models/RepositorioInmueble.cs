@@ -245,5 +245,46 @@ namespace inmobiliaria_santi.Models
             }
             return filasAfectadas;
         }
+
+        public List<Inmueble> ObtenerNoOcupadosEntreFechas(DateTime fechaInicio, DateTime fechaFin)
+        {
+            var lista = new List<Inmueble>();
+            using var conexion = new MySqlConnection(connectionString);
+            var sql = $@"
+                SELECT i.* 
+                FROM inmueble i
+                WHERE i.estado = 1 AND i.disponible = 1
+                AND i.idInmueble NOT IN (
+                    SELECT c.idInmueble
+                    FROM contrato c
+                    WHERE c.estado = 1
+                    AND (@fechaInicio <= c.fechaFin AND @fechaFin >= c.fechaInicio)
+                );";
+
+            using var comando = new MySqlCommand(sql, conexion);
+            comando.Parameters.AddWithValue("@fechaInicio", fechaInicio);
+            comando.Parameters.AddWithValue("@fechaFin", fechaFin);
+            
+            conexion.Open();
+            using var reader = comando.ExecuteReader();
+            while (reader.Read())
+            {
+                lista.Add(new Inmueble
+                {
+                    idInmueble = reader.GetInt32(nameof(Inmueble.idInmueble)),
+                    direccion = reader[nameof(Inmueble.direccion)]?.ToString() ?? string.Empty,
+                    uso = reader[nameof(Inmueble.uso)]?.ToString() ?? string.Empty,
+                    cantAmbiente = reader.GetInt32(nameof(Inmueble.cantAmbiente)),
+                    valor = reader.GetDecimal(nameof(Inmueble.valor)),
+                    disponible = reader.GetBoolean(nameof(Inmueble.disponible)),
+                    estado = reader.GetBoolean(nameof(Inmueble.estado)),
+                    idTipoInmueble = reader.GetInt32(nameof(Inmueble.idTipoInmueble)),
+                    idPropietario = reader.GetInt32(nameof(Inmueble.idPropietario))
+                });
+            }
+
+            return lista;
+        }
+
     }
 }

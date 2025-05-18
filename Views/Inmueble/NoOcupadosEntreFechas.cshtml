@@ -1,0 +1,71 @@
+@model IEnumerable<inmobiliaria_santi.Models.Inmueble>
+@{
+    ViewData["Title"] = "Inmuebles no ocupados entre fechas";
+    var desde = ViewBag.Desde as string;
+    var hasta = ViewBag.Hasta as string;
+}
+
+<h2 class="text-center my-4">🏘️ Inmuebles no ocupados entre fechas</h2>
+
+<div class="row justify-content-center mb-4">
+    <div class="col-md-6">
+        <form method="get" class="card shadow-sm p-4">
+            <div class="mb-3">
+                <label for="desde" class="form-label">Desde</label>
+                <input type="date" name="desde" class="form-control" value="@desde" required />
+            </div>
+            <div class="mb-3">
+                <label for="hasta" class="form-label">Hasta</label>
+                <input type="date" name="hasta" class="form-control" value="@hasta" required />
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">🔍 Buscar</button>
+                <a asp-action="Index" class="btn btn-secondary ms-2">↩️ Volver</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (Model.Any())
+{
+    <div class="table-responsive mx-auto" style="max-width: 1100px;">
+        <table class="table table-striped table-bordered table-hover shadow-sm text-center align-middle">
+            <thead class="table-success">
+                <tr>
+                    <th>📍 Dirección</th>
+                    <th>🔧 Uso</th>
+                    <th>🚪 Ambientes</th>
+                    <th>💰 Valor</th>
+                    <th>📌 Disponible</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var inmueble in Model)
+                {
+                    <tr>
+                        <td>@inmueble.direccion</td>
+                        <td>@inmueble.uso</td>
+                        <td>@inmueble.cantAmbiente</td>
+                        <td>@inmueble.valor.ToString("C")</td>
+                        <td>
+                            @if (inmueble.disponible)
+                            {
+                                <span class="badge bg-success">Sí</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">No</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else if (desde != null && hasta != null)
+{
+    <div class="alert alert-info text-center">
+        No hay inmuebles disponibles entre esas fechas.
+    </div>
+}

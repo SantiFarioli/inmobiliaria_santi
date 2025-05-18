@@ -9,7 +9,10 @@
     <h1>Listado de Inmuebles</h1>
     @if (esAdmin)
     {
-        <a class="btn btn-success" asp-action="Crear">Crear Inmueble</a>
+        <div class="mt-3 d-flex justify-content-center flex-wrap gap-2">
+            <a class="btn btn-success" asp-action="Crear">➕ Crear Inmueble</a>
+            <a class="btn btn-outline-info" asp-action="NoOcupadosEntreFechas">📆 Inmuebles No Ocupados por Fecha</a>
+        </div>
     }
 </div>
 

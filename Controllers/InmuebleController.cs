@@ -12,8 +12,8 @@ namespace inmobiliaria_santi.Controllers
         private readonly RepositorioPropietario _repositorioPropietario;
         private readonly RepositorioTipoInmueble _repositorioTipoInmueble;
 
-        public InmuebleController(RepositorioInmueble repositorio, 
-                          RepositorioPropietario repositorioPropietario, 
+        public InmuebleController(RepositorioInmueble repositorio,
+                          RepositorioPropietario repositorioPropietario,
                           RepositorioTipoInmueble repositorioTipoInmueble)
         {
             _repositorio = repositorio;
@@ -75,10 +75,11 @@ namespace inmobiliaria_santi.Controllers
         {
             ViewBag.Propietarios = new SelectList(
                 _repositorioPropietario.ObtenerTodos()
-                .Select(p => new { 
-                        p.idPropietario, 
-                        NombreCompleto = p.nombre + " " + p.apellido 
-                }), 
+                .Select(p => new
+                {
+                    p.idPropietario,
+                    NombreCompleto = p.nombre + " " + p.apellido
+                }),
                 "idPropietario", "NombreCompleto");
 
             ViewBag.Tipos = new SelectList(_repositorioTipoInmueble.ObtenerTodos(), "idTipoInmueble", "nombre");
@@ -149,10 +150,11 @@ namespace inmobiliaria_santi.Controllers
 
             ViewBag.Propietarios = new SelectList(
                 _repositorioPropietario.ObtenerTodos()
-                .Select(p => new { 
-                    p.idPropietario, 
-                    NombreCompleto = p.nombre + " " + p.apellido 
-                }), 
+                .Select(p => new
+                {
+                    p.idPropietario,
+                    NombreCompleto = p.nombre + " " + p.apellido
+                }),
                 "idPropietario", "NombreCompleto", inmueble.idPropietario);
 
             ViewBag.Tipos = new SelectList(_repositorioTipoInmueble.ObtenerTodos(), "idTipoInmueble", "nombre", inmueble.idTipoInmueble);
@@ -206,5 +208,29 @@ namespace inmobiliaria_santi.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
+        
+        [Authorize(Roles = "Administrador,Empleado")]
+        public IActionResult NoOcupadosEntreFechas(DateTime? desde, DateTime? hasta)
+        {
+            if (desde.HasValue && hasta.HasValue)
+            {
+                if (desde > hasta)
+                {
+                    TempData["Mensaje"] = "La fecha de inicio no puede ser mayor que la fecha de fin.";
+                    TempData["Tipo"] = "warning";
+                    return View(new List<Inmueble>());
+                }
+
+                var lista = _repositorio.ObtenerNoOcupadosEntreFechas(desde.Value, hasta.Value);
+                ViewBag.Desde = desde.Value.ToString("yyyy-MM-dd");
+                ViewBag.Hasta = hasta.Value.ToString("yyyy-MM-dd");
+                return View(lista);
+            }
+
+            ViewBag.Desde = "";
+            ViewBag.Hasta = "";
+            return View(new List<Inmueble>());
+        }
+
     }
 }
